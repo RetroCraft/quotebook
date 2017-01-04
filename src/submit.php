@@ -7,6 +7,10 @@
   } else {
     $user = $_SESSION['user']['name'];
   }
+
+  if ($_SESSION['user']['submit'] != "1") {
+    header('Location: http://quotebook.retrocraft.ca/?err=' . urlencode("You don't have permission to submit a quote. Please contact me (james) if you think there's a mistake. If you're sure you have permission, try logging in and out."));
+  }
 ?>
 <!DOCTYPE html>
 <html>
