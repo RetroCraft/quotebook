@@ -32,6 +32,10 @@ switch($_POST["action"]) {
 
     submit($_POST['speaker'], $_POST['quote'], $_POST['context'], $_POST['timestamp'], $_POST['morestuff'], $_SESSION['user']['name']);
     break;
+  
+  case "myquotes":
+    myquotes();
+    break;
 
   default:
     fail("Unknown action");
@@ -176,6 +180,57 @@ function submit($speaker, $quote, $context, $timestamp, $morestuff, $submittedby
   }
 
   die('{"status": "success"}');
+}
+
+function myquotes() {
+  global $dbh;
+
+  $user = $_SESSION['user']['name'];
+
+  try {
+    $stmt = $dbh->prepare("SELECT quote, morestuff, status, fullname, id FROM vw_quotes WHERE submittedby = :user;");    
+    $stmt->bindParam(":user", $user, PDO::PARAM_STR);
+    $stmt->setFetchMode(PDO::FETCH_ASSOC);
+    $stmt->execute();
+  } catch (PDOException $e) {
+    fail($e->getMessage());
+  }
+
+  $out = '{"status": "success", "quotes": [';
+
+  while ($row = $stmt->fetch()) {    
+    switch ($row['status']) {
+      case "Submitted":
+        $class = "warning";
+        break;
+      case "Approved":
+        $class = "success";
+        break;
+      case "Rejected":
+        $class = "danger";
+        break;
+      case "Marked for Deletion":
+        $class = "default";
+        break;
+    }
+
+    if ($row['morestuff'] != "")
+      $excerpt = str_replace("\n", "\\n", htmlspecialchars(substr($row['morestuff'], 0, 75))) . '...';
+    else
+      $excerpt = '';
+
+    $out .= '{"quote": "' . $row['quote'] . '",'
+          . '"excerpt": "' . $excerpt . '",'
+          . '"status": "' . $row['status'] . '",'
+          . '"name": "' . $row['fullname'] . '",'
+          . '"id": "' . $row['id'] . '",'
+          . '"class": "' . $class . '"},';
+  }
+
+  $out = rtrim($out, ",");
+  $out .= "]}";
+
+  die($out);
 }
 
 function fail($error) {
