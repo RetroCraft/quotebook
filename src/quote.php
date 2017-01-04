@@ -1,30 +1,66 @@
 <?php
   session_start();
   include("php/parsedown.php");
+  include('php/database.php');
+  $dbh = connect();
 
+  // Check logged in
   if (!isset($_SESSION['user'])) {
     header('Location: http://quotebook.retrocraft.ca/login.php');
   } else {
     $user = $_SESSION['user']['name'];
   }
 
+  // Make sure ID is provided
   if (!isset($_GET["id"])) {
     header('Location: http://quotebook.retrocraft.ca/');
   }
 
   $id = $_GET["id"];
 
+  // Try retrieving quote as user
   try {
-    $dbh = new PDO("mysql:host=localhost;dbname=quotebook", "quotebook", "C3yA8sJzDqCjT7zh");
-    $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $stmt = $dbh->prepare('SELECT * FROM vw_quotes WHERE id = :id AND submittedby = :user');
+    $stmt->bindParam(":id", $id, PDO::PARAM_STR);
+    $stmt->bindParam(":user", $user, PDO::PARAM_STR);
+    $stmt->setFetchMode(PDO::FETCH_ASSOC);
+    $stmt->execute();
+  } catch (PDOException $e) {
+    fail($e->getMessage());
+  }
 
+  if ($row = $stmt->fetch()) {
+    // User owns quote, allow edit functions
+    $admin = true;
+
+    switch ($row['status']) {
+      case "Submitted":
+        $class = "warning";
+        break;
+      case "Approved":
+        $class = "success";
+        break;
+      case "Rejected":
+        $class = "danger";
+        break;
+      case "Marked for Deletion":
+        $class = "default";
+        break;
+    }
+  } else {
+    $admin = false;
+
+    // Try retrieving quote normally
     $stmt = $dbh->prepare('SELECT * FROM vw_quotes WHERE id = :id AND status = "Approved"');
     $stmt->bindParam(":id", $id, PDO::PARAM_STR);
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->execute();
     $row = $stmt->fetch();
-  } catch (PDOException $e) {
-    fail($e->getMessage());
+    
+    // Quote does not exist or is not available to user
+    if (!$row) {
+      fail("Quote not found. Maybe it was deleted?");
+    }
   }
 
   function fail($err) {
@@ -49,6 +85,15 @@
         echo ", " . $row["year"]; 
         } ?>
       </p>
+      <?php if ($admin): ?>
+      <hr>
+      <p>
+        <strong>Note:</strong> You own this quote. Go to the <a href="dashboard.php">Dashboard</a> to edit it.
+        <span class="tag tag-<?php echo $class; ?> tag-pill float-lg-right">
+          Status: <?php echo $row['status']; ?>
+        </span>
+      </p>
+      <?php endif; ?>
     </div>
   </div>
   <div class="container">
