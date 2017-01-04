@@ -36,7 +36,7 @@ if($_POST["action"] == 'signup') {
     $dbh = connect();
 
     // check for user
-    $query = "SELECT id, name, fullname FROM users WHERE name = :name AND pass = :pass LIMIT 1;";
+    $query = "SELECT id, name, fullname, submit, admin FROM users WHERE name = :name AND pass = :pass LIMIT 1;";
     $name = $_POST["name"];
     $pass = $_POST["pass"];
 
@@ -54,19 +54,19 @@ if($_POST["action"] == 'signup') {
       $_SESSION["login"] = "true";
       $_SESSION["user"] = $row;
 
-      filelog("Login", "From $uid ($user_name)");
+      filelog("Login", "From $name");
       header("Location: http://quotebook.retrocraft.ca");
       success("Login successful.");
     } else {
-      filelog("Login", "Incorrect login for " . $_POST["email"] . ".");
+      filelog("Login", "Incorrect login for $name.");
       fail("Incorrect or unknown username or password.");
     }
   }
 
 } else if (isset($_GET["logout"]) || $_POST["action"] = 'logout') {
 
-  // logout
-  filelog("Logout", "From $uid ($user_name)");
+  $name = $_SESSION['user']['name'];
+  filelog("Logout", "From $name");
   session_unset();
   session_destroy();
   header("Location: http://quotebook.retrocraft.ca/login.php?logout");
@@ -86,7 +86,7 @@ function success($msg) {
   die('{"status": "success", "message": "' . $msg . '"}');
 }
 
-function filelog($msg, $context) {
+function filelog($context, $msg) {
   $now = date("Y-m-d H:i:s");
   $cip = $_SERVER["REMOTE_ADDR"];
   $log = "[$now] ($context|$cip) $msg\n";
