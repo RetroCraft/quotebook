@@ -52,13 +52,32 @@
     </div>
   </div>
   <div class="container">
+    <h2>Description</h2>
     <div class="markdown">
       <?php 
-        echo Parsedown::instance()
-          ->setBreaksEnabled(true)
-          ->text($row["morestuff"]);
+        if ($row["morestuff"] != "") {
+          echo Parsedown::instance()
+            ->setBreaksEnabled(true)
+            ->text($row["morestuff"]);
+        } else {
+          echo "No description provided. Sorry... ☹";
+        }
       ?>
     </div>
+    <hr>
+    <h2>Info</h2>
+    <table class="table table-bordered table-hover">
+      <tbody>
+        <tr>
+          <th scope="row">Estimated Date/Time</th>
+          <td><?php echo $row["date"]; ?></td>
+        </tr>
+        <tr>
+          <th scope="row">Submitted By</th>
+          <td><?php echo $row["submittedby"]; ?></td>
+        </tr>
+      </tbody>
+    </table>
   </div>
   <?php include('php/footer.php'); ?>
 </body>

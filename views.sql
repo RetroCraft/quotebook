@@ -20,6 +20,7 @@ select q.id id,
     q.morestuff morestuff,
     q.date `date`,
     year(q.date) `year`,
+    q.submittedby submittedby,
     q.status status
   from quotes as q
   join users u on u.name = q.speaker;
