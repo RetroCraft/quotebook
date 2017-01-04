@@ -111,6 +111,27 @@ switch($_POST["action"]) {
     }
 
     break;
+    
+  case "people":
+    try {
+      $stmt = $dbh->prepare("SELECT name FROM users;");
+      $stmt->execute();
+    } catch (PDOException $e) {
+      fail($e->getMessage());
+    }
+
+    $out = '{"status": "success", "people": [';
+
+    while ($row = $stmt->fetch()) {
+      $out .= '{"name": "' . $row["name"] . '"},';
+    }
+
+    $out = rtrim($out, ",");
+    $out .= "]}";
+
+    die($out);
+
+    break;
 
   default:
     fail("Unknown action");

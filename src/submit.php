@@ -26,6 +26,7 @@
     });
 
     $(document).ready(function() {
+      // Setup live markdown parsing thingy
       var textarea = $("#morestuff");
       $("#markdown-preview").html(mkd.makeHtml(textarea.val()));
       textarea.data('oldVal', textarea.val());
@@ -35,6 +36,22 @@
           $("#markdown-preview").html(mkd.makeHtml(textarea.val()));
         }
       });
+
+      // Populate list of authors
+      $.post('php/query.php', {'action': 'people'}, function(data) {
+        console.log(data);
+        if (data.status == "error") {
+          $("#errormsg").html(data.message);
+          $("#error").show();
+        } else if (data.status == "success") {
+          var people = data.people;
+          var select = '';
+          for (var i = 0; i < people.length; i++) {
+            select += '<option>' + people[i].name + '</option>';
+          }
+          $("#speaker").html(select);
+        }
+      }, 'json');
     });
   </script>
 </head>
@@ -48,6 +65,7 @@
     </div>
   </div>
   <div class="container">
+    <div class="alert alert-danger" id="error" style="display:none;"><strong>Error!</strong> <span id="errormsg"></span></div>
     <h1>Big Long Form To Fill Out</h1>
     <div class="form-group">
       <label for="speaker">Who said it?</label>
