@@ -42,99 +42,102 @@ else:
 endif;
 
 function main($search, $speaker) {
-    $out = '{"status": "success", "authors": [';
+  global $dbh;
+  $out = '{"status": "success", "authors": [';
 
-    try {
-      $stmt = $dbh->prepare("SELECT * FROM vw_users;");
-      $stmt->execute();
-    } catch (PDOException $e) {
-      fail($e->getMessage());
-    }
+  try {
+    $stmt = $dbh->prepare("SELECT * FROM vw_users;");
+    $stmt->execute();
+  } catch (PDOException $e) {
+    fail($e->getMessage());
+  }
 
-    while ($row = $stmt->fetch()) {
-      $out .= '{"id": ' . $row["id"] . ',' .
-              '"name": "' . $row["name"] . '",' .
-              '"fullname": "' . $row["fullname"] . '"},';
-    }
+  while ($row = $stmt->fetch()) {
+    $out .= '{"id": ' . $row["id"] . ',' .
+            '"name": "' . $row["name"] . '",' .
+            '"fullname": "' . $row["fullname"] . '"},';
+  }
 
-    $out = rtrim($out, ",");
-    $out .= '], "quotes": [';
+  $out = rtrim($out, ",");
+  $out .= '], "quotes": [';
 
-    $query = 'SELECT id, quote, context, name, year 
-              FROM vw_quotes 
-              WHERE name LIKE :speaker 
-                AND status = "Approved"
-                AND (quote LIKE :quote OR context LIKE :quote)';
+  $query = 'SELECT id, quote, context, name, year 
+            FROM vw_quotes 
+            WHERE name LIKE :speaker 
+              AND status = "Approved"
+              AND (quote LIKE :quote OR context LIKE :quote)';
 
-    if ($speaker == "---") {
-      $speakerGlob = "%";
-    } else {
-      $speakerGlob = $speaker;
-    }
+  if ($speaker == "---") {
+    $speakerGlob = "%";
+  } else {
+    $speakerGlob = $speaker;
+  }
 
-    if ($search == "") {
-      $searchGlob = "%";
-    } else {
-      $searchGlob = "%$search%";
-    }
+  if ($search == "") {
+    $searchGlob = "%";
+  } else {
+    $searchGlob = "%$search%";
+  }
 
-    try {
-      $stmt = $dbh->prepare($query);
-      $stmt->bindParam(":speaker", $speakerGlob, PDO::PARAM_STR);
-      $stmt->bindParam(":quote", $searchGlob, PDO::PARAM_STR);
-      $stmt->setFetchMode(PDO::FETCH_ASSOC);
-      $stmt->execute();
-    } catch (PDOException $e) {
-      fail($e->getMessage());
-    }
+  try {
+    $stmt = $dbh->prepare($query);
+    $stmt->bindParam(":speaker", $speakerGlob, PDO::PARAM_STR);
+    $stmt->bindParam(":quote", $searchGlob, PDO::PARAM_STR);
+    $stmt->setFetchMode(PDO::FETCH_ASSOC);
+    $stmt->execute();
+  } catch (PDOException $e) {
+    fail($e->getMessage());
+  }
 
-    while ($row = $stmt->fetch()) {
-      $out .= '{"id": ' . $row["id"] . ',' .
-              '"quote": "' . $row["quote"] . '",' .
-              '"context": "' . $row["context"] . '",' .
-              '"speaker": "' . $row["name"] . '",' .
-              '"year": "' . $row["year"] . '"},';
-    }
+  while ($row = $stmt->fetch()) {
+    $out .= '{"id": ' . $row["id"] . ',' .
+            '"quote": "' . $row["quote"] . '",' .
+            '"context": "' . $row["context"] . '",' .
+            '"speaker": "' . $row["name"] . '",' .
+            '"year": "' . $row["year"] . '"},';
+  }
 
-    $out = rtrim($out, ",");
-    $out .= "]}";
+  $out = rtrim($out, ",");
+  $out .= "]}";
 
-    die($out);
+  die($out);
 }
 
 function changepass($currpass, $newpass, $name) {
-    // check for user
-    $query = "SELECT name FROM users WHERE name = :name AND pass = :pass LIMIT 1;";
+  global $dbh;
+  // check for user
+  $query = "SELECT name FROM users WHERE name = :name AND pass = :pass LIMIT 1;";
 
+  try {
+    $stmt = $dbh->prepare($query);
+    $stmt->bindParam(":name", $name, PDO::PARAM_STR);
+    $stmt->bindParam(":pass", $currpass, PDO::PARAM_STR);
+    $stmt->setFetchMode(PDO::FETCH_ASSOC);
+    $stmt->execute();
+  } catch (PDOException $e) {
+    fail($e->getMessage());
+  }
+
+  if ($row = $stmt->fetch()) {
+    // Update password
     try {
-      $stmt = $dbh->prepare($query);
+      $stmt = $dbh->prepare("UPDATE users SET pass = :pass WHERE name = :name");
       $stmt->bindParam(":name", $name, PDO::PARAM_STR);
-      $stmt->bindParam(":pass", $currpass, PDO::PARAM_STR);
-      $stmt->setFetchMode(PDO::FETCH_ASSOC);
+      $stmt->bindParam(":pass", $newpass, PDO::PARAM_STR);
       $stmt->execute();
     } catch (PDOException $e) {
       fail($e->getMessage());
     }
+    
+    die('{"status":"success"}');
 
-    if ($row = $stmt->fetch()) {
-      // Update password
-      try {
-        $stmt = $dbh->prepare("UPDATE users SET pass = :pass WHERE name = :name");
-        $stmt->bindParam(":name", $name, PDO::PARAM_STR);
-        $stmt->bindParam(":pass", $newpass, PDO::PARAM_STR);
-        $stmt->execute();
-      } catch (PDOException $e) {
-        fail($e->getMessage());
-      }
-      
-      die('{"status":"success"}');
-
-    } else {
-      fail("Incorrect current password, or something else wrong happened.");
-    }
+  } else {
+    fail("Incorrect current password, or something else wrong happened.");
+  }
 }
 
 function people() {
+  global $dbh;
   try {
     $stmt = $dbh->prepare("SELECT name FROM users;");
     $stmt->execute();
@@ -155,6 +158,7 @@ function people() {
 }
 
 function submit($speaker, $quote, $context, $timestamp, $morestuff, $submittedby) {
+  global $dbh;
   $query = 'INSERT INTO quotes (quote, context, morestuff, speaker, `date`, submittedby) 
             VALUES (:quote, :context, :morestuff, :speaker, :timestamp, :submittedby)';
 
