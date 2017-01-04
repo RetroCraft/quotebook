@@ -1,0 +1,86 @@
+* {
+  margin: 0;
+}
+
+body {
+  min-height: 100%;
+}
+
+.header {
+  padding: 2rem 15px;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  background-color: #5cb85c;
+  color: lighten(#5cb85c, 30%);
+
+  @media (min-width: 576px) {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+    margin-bottom: 3rem;
+    text-align: left;
+  }
+
+  h1 {
+    font-size: 3rem;
+    font-weight: normal;
+    color: white;
+
+    @media (min-width: 576px) {
+      font-size: 4rem;
+    }
+  }
+
+  p {
+    margin-bottom: 0;
+    font-size: 1.25rem;
+    font-weight: 300;
+
+    @media (min-width: 576px) {
+      font-size: 1.5rem;
+    }
+  }
+
+  & + container {
+    margin-top: 1rem;
+  }
+}
+
+.not-footer {
+  min-height: 100%;
+  margin-bottom: 7rem;
+
+  &:after {
+    content: "";
+    height: 6rem;
+    display: block;
+  }
+}
+
+.footer {
+  height: 6rem;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 1rem;
+  text-align: center;
+}
+
+textarea.code {
+  font-family: "Fira Code", "DejaVu Sans Mono", "Menlo", "Consolas", "Liberation Mono", "Monaco", "Lucida Console", monospace
+}
+
+.markdown {
+  blockquote {
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+    border-left: 0.25rem solid #eceeef;
+  }
+}
+
+#markdown-preview {
+  background-color: #eee;
+  min-height: 5rem;
+  padding: 1rem;
+  margin: 0rem 1rem 1rem 1rem;
+}

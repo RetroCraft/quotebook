@@ -1,0 +1,42 @@
+var gulp = require('gulp');
+var sass = require('gulp-sass');
+var sftp = require('gulp-sftp');
+var changed = require('gulp-changed');
+var del = require('del');
+var merge2 = require('merge2');
+
+var src = 'src/**';
+var dist = 'dist/';
+
+gulp.task('clean', function () {
+  del.sync(['./dist/**', '!./dist']);
+})
+
+gulp.task('sass', function() {
+  return gulp.src('src/css/*.scss')
+    .pipe(sass({ outputStyle: 'compressed' }))
+    .pipe(gulp.dest(dist + 'css'))
+    .pipe(sftp({
+      host: 'example.com',
+      user: 'root',
+      key: 'keyfile',
+      remotePath: '/var/www/css'
+    }));
+});
+
+gulp.task('upload', function () {
+  return gulp.src([src, "!src/css/*.scss", "!src/php/database.php.example"])
+    .pipe(changed(dist))
+    .pipe(gulp.dest(dist))
+    .pipe(sftp({
+      host: 'example.com',
+      user: 'root',
+      key: 'keyfile',
+      remotePath: '/var/www/'
+    }));
+});
+
+gulp.task('default', ['clean'], function () {
+  gulp.watch([src, "!src/css/*.scss", "!src/php/database.php.example"], ['upload']);
+  gulp.watch(['src/css/*.scss'], ['sass']);
+})

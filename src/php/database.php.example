@@ -1,0 +1,15 @@
+<?php
+function connect() {
+  try {
+    $database = 'database';
+    $user = 'user';
+    $password = 'password';
+    
+    $dbh = new PDO("mysql:host=localhost;dbname=$database", "$user", "$password");
+    $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    return $dbh;
+  } catch (PDOException $e) {
+    fail($e->getMessage());
+  }
+}
+?>

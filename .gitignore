@@ -1,0 +1,14 @@
+# Node thingamajiggers
+node_modules
+
+# Output thingies
+dist/**
+
+# The file with the database password
+src/php/database.php
+# The file with the SFTP login stuff
+gulpfile.js
+
+# All hidden files, but this one (i.e. sass-cache, etc.)
+.**
+!.gitignore
