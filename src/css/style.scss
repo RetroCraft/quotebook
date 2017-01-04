@@ -66,6 +66,15 @@ body {
   text-align: center;
 }
 
+.quotes {
+  .edit-icon {
+    display: none;
+  }
+  .list-group-item-action:hover .edit-icon {
+    display: inline-block;
+  }
+}
+
 textarea.code {
   font-family: "Fira Code", "DejaVu Sans Mono", "Menlo", "Consolas", "Liberation Mono", "Monaco", "Lucida Console", monospace
 }
