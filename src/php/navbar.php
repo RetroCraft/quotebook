@@ -7,6 +7,9 @@
       <li class="nav-item">
         <a class="nav-link" href="/">Home</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/submit.php">Submit</a>
+      </li>
     </ul>
     <form class="form-inline float-lg-right">
       <span class="navbar-text text-muted">

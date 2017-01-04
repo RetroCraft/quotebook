@@ -52,6 +52,29 @@
           $("#speaker").html(select);
         }
       }, 'json');
+
+      // Setup submit button hook thingy
+      $("#submit").click(function() {
+        $.post('php/query.php', {
+          'speaker': $("#speaker").val(),
+          'quote': $("#quote").val(),
+          'context': $("#context").val(),
+          'timestamp': $("#timestamp").val(),
+          'morestuff': $("#morestuff").val(),
+          'action': 'submit'
+        }, function(data) {
+          console.log(data);
+          if (data.status == "error") {
+            $("#errormsg").html(data.message);
+            $("#error").show();
+          } else if (data.status == "success") {
+            // TODO: Implement dashboard.
+            // window.location = "http://quotebook.retrocraft.ca/dashboard.php?submit";
+            alert('Submission successful. A dashboard will be implemented soon where you can track the status of your submission');
+            window.location = "http://quotebook.retrocraft.ca";
+          }
+        }, 'json');
+      });
     });
   </script>
 </head>
@@ -61,7 +84,7 @@
     <div class="container">
       <h1>Submit a Quote!</h1>
       <p>Mind you I have to approve all the things you type in here, and I would like to have eyes after this is all said and done.</p>
-      <p>This page does not actually work yet. Do not use it. It won't do anything.</p>
+      <p>This page does is under construction and <strong>might</strong> not work. Lemme know if it doesn't.</p>
     </div>
   </div>
   <div class="container">
@@ -69,7 +92,9 @@
     <h1>Big Long Form To Fill Out</h1>
     <div class="form-group">
       <label for="speaker">Who said it?</label>
-      <select id="speaker" class="custom-select form-control"></select>
+      <select id="speaker" class="custom-select form-control">
+        <option value="">Loading...</option>
+      </select>
     </div>
     <div class="form-group">
       <label for="quote">What'd they say?</label>
@@ -77,12 +102,12 @@
     </div>
     <div class="form-group">
       <label for="context">Context?</label>
-      <input type="text" class="form-control" id="context" placeholder="i.e. 'on the Skype group chat'">      
+      <input type="text" class="form-control" id="context" placeholder="i.e. 'on the Skype group chat'">
     </div>
     <div class="form-group">
       <label for="timestamp">Timestamp?</label>
       <input type="datetime-local" class="form-control" id="timestamp">
-      <p class="form-text text-muted">If you can't remember time, put midnight (00:00). If you can't remember date, put 1<sup>st</sup> of that month. If it happens a lot, and you want the context field used instead of the date (i.e. "every. single. day."), put 0000-00-00 00:00 (i.e. zeroes. lots of them)</p>
+      <p class="form-text text-muted">If you can't remember time, put midnight (00:00). If you can't remember date, put 1<sup>st</sup> of that month. If it happens a lot, and you want the context field used instead of the date (i.e. "every. single. day."), put 01/01/0001 00:00 (i.e. zeroes. lots of them)</p>
     </div>
     <div class="form-group">
       <label for="morestuff">Anything else you'd like to add?</label>

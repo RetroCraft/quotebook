@@ -133,6 +133,39 @@ switch($_POST["action"]) {
 
     break;
 
+  case "submit":
+    if (!isset($_POST['speaker']) || !isset($_POST['quote']) || 
+        !isset($_POST['context']) || !isset($_POST['timestamp']) || !isset($_POST['morestuff'])) {
+      fail("Missing parameters");
+    }
+
+    $query = 'INSERT INTO quotes (quote, context, morestuff, speaker, `date`, submittedby) 
+              VALUES (:quote, :context, :morestuff, :speaker, :timestamp, :submittedby)';
+
+    $speaker = $_POST['speaker'];
+    $quote = $_POST['quote'];
+    $context = $_POST['context'];
+    $timestamp = $_POST['timestamp'];
+    $morestuff = $_POST['morestuff'];
+    $submittedby = $_SESSION['user']['name'];
+    
+    try {
+      $stmt = $dbh->prepare($query);
+      $stmt->bindParam(":speaker", $speaker, PDO::PARAM_STR);
+      $stmt->bindParam(":quote", $quote, PDO::PARAM_STR);
+      $stmt->bindParam(":context", $context, PDO::PARAM_STR);
+      $stmt->bindParam(":timestamp", $timestamp, PDO::PARAM_STR);
+      $stmt->bindParam(":morestuff", $morestuff, PDO::PARAM_STR);
+      $stmt->bindParam(":submittedby", $submittedby, PDO::PARAM_STR);
+      $stmt->execute();
+    } catch (PDOException $e) {
+      fail($e->getMessage());
+    }
+
+    die('{"status": "success"}');
+
+    break;
+
   default:
     fail("Unknown action");
 }

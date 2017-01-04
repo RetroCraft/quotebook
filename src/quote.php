@@ -45,7 +45,7 @@
       <p>
         &mdash;<a href="speaker.php?id=<?php echo $row["speaker"]; ?>"><?php echo $row["fullname"]; ?></a>, 
         <?php echo $row["context"];
-        if ($row["year"] > 0) {
+        if ($row["year"] > 1) {
         echo ", " . $row["year"]; 
         } ?>
       </p>
