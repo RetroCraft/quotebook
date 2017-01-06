@@ -37,6 +37,32 @@ switch($_POST["action"]) {
     myquotes();
     break;
 
+  case "deletemark":
+    if (!isset($_POST['id']))
+      fail("Missing parameters");
+
+    // Check permissions
+    try {
+      $stmt = $dbh->prepare('SELECT submittedby FROM quotes WHERE id = :id');
+      $stmt->bindParam(":id", $_POST["id"], PDO::PARAM_STR);
+      $stmt->setFetchMode(PDO::FETCH_ASSOC);
+      $stmt->execute();
+    } catch (PDOException $e) {
+      fail($e->getMessage());
+    }
+
+    if ($row = $stmt->fetch()) {
+      // Owner of quote or is administrator
+      if ($row['submittedby'] == $_SESSION['user']['name'] || $_SESSION['user']['admin'] == '1') {
+        statusupdate($_POST['id'], "Marked for Deletion");
+      } else {
+        fail("You don't have permission to delete this quote!");
+      }
+    } else {
+      fail("Invalid id");
+    }
+    break;
+
   default:
     fail("Unknown action");
 }
@@ -144,6 +170,7 @@ function people() {
   global $dbh;
   try {
     $stmt = $dbh->prepare("SELECT name FROM users;");
+    $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->execute();
   } catch (PDOException $e) {
     fail($e->getMessage());
@@ -231,6 +258,21 @@ function myquotes() {
   $out .= "]}";
 
   die($out);
+}
+
+function statusupdate($id, $status) {
+  global $dbh;
+
+  try {
+    $stmt = $dbh->prepare('UPDATE quotes SET status = :status WHERE id = :id');
+    $stmt->bindParam(":status", $status, PDO::PARAM_STR);
+    $stmt->bindParam(":id", $id, PDO::PARAM_STR);
+    $stmt->execute();
+  } catch (PDOException $e) {
+    fail($e->getMessage());
+  }
+
+  die('{"status": "success"}');
 }
 
 function fail($error) {
