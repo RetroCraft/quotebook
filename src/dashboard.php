@@ -29,7 +29,6 @@
     $(document).ready(refresh);
 
     function refresh() {
-      $("#error").hide();
       query({action: 'myquotes'}, function(data) {
         html = '';
         quotes = data.quotes;
@@ -52,12 +51,71 @@
       });
     }
 
-    function edit(id, stage) {
+    function edit(id) {
+      var q = quotes[id];
+
+      // Setup modal
+      var modal = $('#edit-modal');
+
+      // Populate list of authors
+      query({action: 'people'}, function(data) {
+        var people = data.people;
+        var select = '';
+        for (var i = 0; i < people.length; i++) {
+          select += '<option>' + people[i].name + '</option>';
+        }
+        $("#speaker").html(select);
+      });
+
+      // Get and populate fields
+      query({action: 'quote', id: q.id}, function(data) {
+        var quote = data.quote;
+        $("#speaker").val(quote.name);
+        $("#quote").val(quote.quote);
+        $("#context").val(quote.context);
+
+        // Parse timestamp
+        var tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset from Z in ms
+        var timestamp = (new Date(new Date(quote.date) - tzoffset)).toISOString().slice(0,-1);
+        $("#timestamp").val(timestamp);
+
+        // Decode morestuff with the hackiest thing ever
+        $("#morestuff").val($('<textarea />').html(quote.morestuff).text());
+
+        // Setup live markdown parsing thingy
+        var textarea = $("#morestuff");
+        textarea.data('oldVal', textarea.val());
+        textarea.bind("change click keyup input paste propertychange", function(e) {
+          if (textarea.data('oldVal') != textarea.val()) {
+            textarea.data('oldVal', textarea.val());
+            $("#markdown-preview").html(mkd.makeHtml(textarea.val()));
+          }
+        });
+        
+        $("#markdown-preview").html(mkd.makeHtml(textarea.val()));
+      });
+
+      // Setup submit button hook thingy
+      $("#submit").click(function() {
+        query({
+          action: 'edit',
+          id: q.id,
+          speaker: $("#speaker").val(),
+          quote: $("#quote").val(),
+          context: $("#context").val(),
+          timestamp: $("#timestamp").val(),
+          morestuff: $("#morestuff").val()
+        }, function(data) {
+          alertbox('Edit successful.', 'success');
+          refresh();
+        });
+      });
       
+      // Show modal
+      modal.modal();
     }
 
     function del(id) {
-      $("#error").hide();
       var q = quotes[id];
 
       // Setup modal
@@ -110,6 +168,49 @@
         <div class="modal-footer">
           <button class="btn btn-secondary" data-dismiss="modal">Cancel</button>
           <button class="btn btn-danger" id="delete">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="edit-modal">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button class="close" data-dismiss="modal"><span>&times;</span></button>
+          <h4 class="modal-title">Edit: <span data-template="quote"></span></h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="speaker">Who said it?</label>
+            <select id="speaker" class="custom-select form-control">
+              <option value="">Loading...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="quote">What'd they say?</label>
+            <input type="text" class="form-control" id="quote">
+          </div>
+          <div class="form-group">
+            <label for="context">Context?</label>
+            <input type="text" class="form-control" id="context" placeholder="i.e. 'on the Skype group chat'">
+          </div>
+          <div class="form-group">
+            <label for="timestamp">Timestamp?</label>
+            <input type="datetime-local" class="form-control" id="timestamp">
+            <p class="form-text text-muted">If you can't remember time, put midnight (00:00). If you can't remember date, put 1<sup>st</sup> of that month. If it happens a lot, and you want the context field used instead of the date (i.e. "every. single. day."), put 01/01/0001 00:00 (i.e. zeroes. lots of them)</p>
+          </div>
+          <div class="form-group">
+            <label for="morestuff">Anything else you'd like to add?</label>
+            <!--Gosh this is a stupid decision let's pretend didn't happen...-->
+            <textarea id="morestuff" cols="30" rows="10" class="form-control code"></textarea>
+            <p class="form-text text-muted">What you write in here is formatted with Markdown. Examples are included. If you don't know how to read an example, you can use Google for help. <a href="http://lmgtfy.com/?iie=1&q=Markdown+cheat+sheet" target="_blank">I should not have to tell you to do that.</a></p>
+          </div>
+          <p>Preview of what you wrote above in case you <strong>STILL</strong> can't figure out Markdown <small class="text-muted">*sigh*</small></p>
+          <div class="markdown" id="markdown-preview"></div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button class="btn btn-success" id="submit">BIG FAT (RE)SUBMIT BUTTON!!</button>
         </div>
       </div>
     </div>

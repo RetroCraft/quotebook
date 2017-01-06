@@ -1,5 +1,13 @@
 <?php
 session_start();
+
+// Permission level constants
+define('NONE', -1);
+define('VIEW', 0);
+define('EDIT', 1);
+define('OWN', 2);
+define('ADMIN', 3);
+
 include('database.php');
 $dbh = connect();
 
@@ -12,6 +20,13 @@ switch($_POST["action"]) {
       fail("Missing parameters");
 
     main($_POST["filters:search"], $_POST["filters:speaker"]);
+    break;
+
+  case "quote":
+    if (!isset($_POST['id']))
+      fail("Missing parameters");
+    
+    quote($_POST['id']);
     break;
 
   case "changepass":
@@ -131,6 +146,99 @@ function main($search, $speaker) {
   $out .= "]}";
 
   die($out);
+}
+
+function permission($id) {
+  // Check for admin level
+  if ($_SESSION['user']['admin'] == '1')
+    return ADMIN;
+
+  // Check if owner of quote
+  try {
+    $stmt = $dbh->prepare('SELECT status, submittedby FROM vw_quotes WHERE id = :id');
+    $stmt->bindParam(":id", $id, PDO::PARAM_STR);
+    $stmt->setFetchMode(PDO::FETCH_ASSOC);
+    $stmt->execute();
+  } catch (PDOException $e) {
+    fail($e->getMessage());
+  }
+
+  if ($row = $stmt->fetch()) {
+    // Check owner
+    if ($row['submittedby'] == $_SESSION['user']['name'])
+      return OWN;
+    
+    // Check permissions to view
+    if ($row['status'] == 'Approved')
+      return VIEW;
+    
+    return NONE;
+  } else {
+    die('Invalid id.');
+  }
+}
+
+function quote($id) {
+  global $dbh;
+
+  $user = $_SESSION['user']['name'];
+  $access = permission($id);
+
+  if ($access > NONE) {
+    // Grab quote data
+    try {
+      $stmt = $dbh->prepare('SELECT id, quote, name, fullname, context, morestuff, date, year, submittedby, status FROM vw_quotes WHERE id = :id');
+      $stmt->bindParam(":id", $id, PDO::PARAM_STR);
+      $stmt->setFetchMode(PDO::FETCH_ASSOC);
+      $stmt->execute();
+    } catch (PDOException $e) {
+      fail($e->getMessage());
+    }
+
+    $out = '{"status": "success", "quote": {';
+
+    // Ensure that quote exists
+    if ($row = $stmt->fetch()) {
+      $morestuff = str_replace("\n", "\\n", htmlspecialchars($row['morestuff']));
+      $out .= '"id": ' . $row['id']
+            . ', "quote": "' . $row['quote']. '"'
+            . ', "name": "' . $row['name']. '"'
+            . ', "fullname": "' . $row['fullname']. '"'
+            . ', "context": "' . $row['context']. '"'
+            . ', "morestuff": "' . $morestuff . '"'
+            . ', "date": "' . $row['date'] . '"'
+            . ', "year": ' . $row['year'];
+      if ($access >= EDIT) {
+        switch ($row['status']) {
+          case "Submitted":
+            $class = "warning";
+            break;
+          case "Approved":
+            $class = "success";
+            break;
+          case "Rejected":
+            $class = "danger";
+            break;
+          case "Marked for Deletion":
+            $class = "default";
+            break;
+        }
+        $out .= ', "status": "' . $row['status'] . '"'
+              . ', "class": "' . $class. '"';
+      }
+
+      if ($access >= ADMIN) {
+        $out .= ', "submittedby": "' . $row['submittedby'] . '"';
+      }
+
+      $out .= '}}';
+      die($out);
+    } else {
+      fail('Something went wrong and I have no idea how this happened...');
+    }
+  } else {
+    fail('Invalid id.');
+  }
 }
 
 function changepass($currpass, $newpass, $name) {
