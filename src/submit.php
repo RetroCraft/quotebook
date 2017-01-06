@@ -42,37 +42,27 @@
       });
 
       // Populate list of authors
-      $.post('php/query.php', {'action': 'people'}, function(data) {
-        console.log(data);
-        if (data.status == "error") {            
-          alertbox(data.message, 'danger');
-        } else if (data.status == "success") {
-          var people = data.people;
-          var select = '';
-          for (var i = 0; i < people.length; i++) {
-            select += '<option>' + people[i].name + '</option>';
-          }
-          $("#speaker").html(select);
+      query({action: 'people'}, function(data) {
+        var people = data.people;
+        var select = '';
+        for (var i = 0; i < people.length; i++) {
+          select += '<option>' + people[i].name + '</option>';
         }
-      }, 'json');
+        $("#speaker").html(select);
+      });
 
       // Setup submit button hook thingy
       $("#submit").click(function() {
-        $.post('php/query.php', {
-          'speaker': $("#speaker").val(),
-          'quote': $("#quote").val(),
-          'context': $("#context").val(),
-          'timestamp': $("#timestamp").val(),
-          'morestuff': $("#morestuff").val(),
-          'action': 'submit'
+        query({
+          action: 'submit',
+          speaker: $("#speaker").val(),
+          quote: $("#quote").val(),
+          context: $("#context").val(),
+          timestamp: $("#timestamp").val(),
+          morestuff: $("#morestuff").val()
         }, function(data) {
-          console.log(data);
-          if (data.status == "error") {
-            alertbox(data.message, 'danger');
-          } else if (data.status == "success") {
             window.location = "http://quotebook.retrocraft.ca/dashboard.php";
-          }
-        }, 'json');
+        });
       });
     });
   </script>

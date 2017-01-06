@@ -30,14 +30,9 @@
       var currpass = sha3_256($('#currpass').val());
       var newpass = sha3_256($('#newpass').val());
 
-      $.post('php/query.php', {'currpass': currpass, 'newpass': newpass, 'action': 'changepass'}, function(data) {
-        console.log(data);
-        if (data.status == "error") {            
-          alertbox(data.message, 'danger');
-        } else if (data.status == "success") {   
-          alertbox('Settings changed successfully', 'success');
-        }
-      }, 'json');
+      query({action: 'changepass', currpass: currpass, newpass: newpass}, function(data) {
+        alertbox('Settings changed successfully', 'success');
+      });
     }
   </script>
 </head>

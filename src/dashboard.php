@@ -30,31 +30,26 @@
 
     function refresh() {
       $("#error").hide();
-      $.post('php/query.php', {'action': 'myquotes'}, function(data) {
-        console.log(data);
-        if (data.status == "error") {
-          alertbox(data.message, 'danger');
-        } else if (data.status == "success") {
-          html = '';
-          quotes = data.quotes;
-          for (var i = 0; i < quotes.length; i++) {
-            q = quotes[i];
-            html += '<li href="#" class="list-group-item list-group-item-action">'
-                  + '<span class="tag tag-' + q.class + ' tag-pill float-xs-right">' + q.status + '</span>'
-                  + '<h5 class="list-group-item-heading"><a href="/quote.php?id=' + q.id + '">' + q.quote + '</a></h5>'
-                  + '<p class="list-group-item-text">' + q.excerpt + '</p>';
-            if (q.status != "Marked for Deletion") {
-              html += '<div class="btn-group edit-icon float-xs-right">'
-                    + '<button class="btn btn-sm btn-primary material-icons" onclick="edit(' + i + ', 0)">edit</button>'
-                    + '<button class="btn btn-sm btn-danger material-icons" onclick="del(' + i + ', 0)">delete</button>'
-                    + '</div>';
-            }
-            html += '<p class="list-group-item-text">&ndash;' + q.name + '</p>'
-                  + '</li>';
+      query({action: 'myquotes'}, function(data) {
+        html = '';
+        quotes = data.quotes;
+        for (var i = 0; i < quotes.length; i++) {
+          q = quotes[i];
+          html += '<li href="#" class="list-group-item list-group-item-action">'
+                + '<span class="tag tag-' + q.class + ' tag-pill float-xs-right">' + q.status + '</span>'
+                + '<h5 class="list-group-item-heading"><a href="/quote.php?id=' + q.id + '">' + q.quote + '</a></h5>'
+                + '<p class="list-group-item-text">' + q.excerpt + '</p>';
+          if (q.status != "Marked for Deletion") {
+            html += '<div class="btn-group edit-icon float-xs-right">'
+                  + '<button class="btn btn-sm btn-primary material-icons" onclick="edit(' + i + ', 0)">edit</button>'
+                  + '<button class="btn btn-sm btn-danger material-icons" onclick="del(' + i + ', 0)">delete</button>'
+                  + '</div>';
           }
-          $(".quotes").html(html);
+          html += '<p class="list-group-item-text">&ndash;' + q.name + '</p>'
+                + '</li>';
         }
-      }, 'json');
+        $(".quotes").html(html);
+      });
     }
 
     function edit(id, stage) {
@@ -74,15 +69,10 @@
 
       // Setup actual delete button
       $('#delete').click(function() {
-        $.post('php/query.php', {action: 'deletemark', id: q.id}, function(data) {
-          console.log(data);
-          if (data.status == "error") {
-            alertbox(data.message, 'danger');
-          } else if (data.status == "success") {
-            alertbox('Delete successful.', 'success');
-            refresh();
-          }
-        }, 'json');
+        query({action: 'deletemark', id: q.id}, function(data) {
+          alertbox('Delete successful.', 'success');
+          refresh();
+        });
       });
 
       // Show modal

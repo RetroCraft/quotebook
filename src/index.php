@@ -14,19 +14,27 @@
     $(document).ready(function() {
       getQuotes();
 
-      $('.filter').change(getQuotes);
+      $('.filter').each(function() {
+        var filter = $(this);
+        filter.data('oldVal', filter.val());
+        filter.bind("change click keyup input paste propertychange", function() {
+          if (filter.data('oldVal') != filter.val()) {
+            filter.data('oldVal', filter.val());
+            getQuotes();
+          }
+        });
+      });
     });
 
     function getQuotes() {
       var selectedAuthor = $("#author").val();
-      var params = {
+
+      // Get the things
+      query({
         action: "main",
         "filters:search": $("#search").val(),
         "filters:speaker": selectedAuthor
-      }
-
-      // Get the things
-      $.post("php/query.php", params, function(data) {
+      }, function(data) {
         var quoteHtml = '', authorHtml = '<option>---</option>';
 
         // Loop through quotes
@@ -48,8 +56,7 @@
 
         $("#author").html(authorHtml);
         $("#author").val(selectedAuthor);
-
-      }, "json");
+      });
     }
   </script>
 </head>
