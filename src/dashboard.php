@@ -33,8 +33,7 @@
       $.post('php/query.php', {'action': 'myquotes'}, function(data) {
         console.log(data);
         if (data.status == "error") {
-          $("#errormsg").html(data.message);
-          $("#error").show();
+          alertbox(data.message, 'danger');
         } else if (data.status == "success") {
           html = '';
           quotes = data.quotes;
@@ -78,11 +77,9 @@
         $.post('php/query.php', {action: 'deletemark', id: q.id}, function(data) {
           console.log(data);
           if (data.status == "error") {
-            $("#errormsg").html(data.message);
-            $("#error").show();
+            alertbox(data.message, 'danger');
           } else if (data.status == "success") {
-            $("#successmsg").html('Delete successful.');
-            $("#successmsg").show();
+            alertbox('Delete successful.', 'success');
             refresh();
           }
         }, 'json');
@@ -101,9 +98,7 @@
       <p>This page does is under construction and <strong>might</strong> not work. (Delete button does though!)</p>
     </div>
   </div>
-  <div class="container">
-    <div class="alert alert-danger" id="error" style="display:none;"><strong>Error!</strong> <span id="errormsg"></span></div>
-    <div class="alert alert-success" id="successmsg" style="display:none;"></div>
+  <div class="container content">
     <h2>Your Quotes</h2>
     <ul class="list-group quotes"></ul>
   </div>

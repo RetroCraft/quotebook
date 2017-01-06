@@ -44,9 +44,8 @@
       // Populate list of authors
       $.post('php/query.php', {'action': 'people'}, function(data) {
         console.log(data);
-        if (data.status == "error") {
-          $("#errormsg").html(data.message);
-          $("#error").show();
+        if (data.status == "error") {            
+          alertbox(data.message, 'danger');
         } else if (data.status == "success") {
           var people = data.people;
           var select = '';
@@ -69,13 +68,9 @@
         }, function(data) {
           console.log(data);
           if (data.status == "error") {
-            $("#errormsg").html(data.message);
-            $("#error").show();
+            alertbox(data.message, 'danger');
           } else if (data.status == "success") {
-            // TODO: Implement dashboard.
-            // window.location = "http://quotebook.retrocraft.ca/dashboard.php?submit";
-            alert('Submission successful. A dashboard will be implemented soon where you can track the status of your submission');
-            window.location = "http://quotebook.retrocraft.ca";
+            window.location = "http://quotebook.retrocraft.ca/dashboard.php";
           }
         }, 'json');
       });
@@ -92,7 +87,6 @@
     </div>
   </div>
   <div class="container">
-    <div class="alert alert-danger" id="error" style="display:none;"><strong>Error!</strong> <span id="errormsg"></span></div>
     <h1>Big Long Form To Fill Out</h1>
     <div class="form-group">
       <label for="speaker">Who said it?</label>

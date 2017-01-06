@@ -17,8 +17,7 @@
         $.post('php/checklogin.php', {'name': name, 'pass': pass, 'action': 'login'}, function(data) {
           console.log(data);
           if (data.status == "error") {
-            $("#errormsg").html(data.message);
-            $("#error").show();
+            alertbox(data.message, 'danger');
           } else if (data.status == "success") {
             window.location = "http://quotebook.retrocraft.ca/";
           }
@@ -32,11 +31,8 @@
     <h1 style="margin-top: 10%">Login</h1>
     <hr>
     <?php if (isset($_GET["logout"])): ?>
-      <div class="alert alert-success">Logout successful</div>
+      <div class="alert alert-success"><strong>Yay!</strong> Logout successful</div>
     <?php endif; ?>
-    <div class="alert alert-danger" id="error" style="display:none">
-      <strong>Error!</strong> <span id="errormsg"></span>
-    </div>
     <div class="form">
       <div class="form-group">
         <label for="username" class="bmd-label-floating">Username</label>

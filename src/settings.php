@@ -32,11 +32,10 @@
 
       $.post('php/query.php', {'currpass': currpass, 'newpass': newpass, 'action': 'changepass'}, function(data) {
         console.log(data);
-        if (data.status == "error") {
-          $("#errormsg").html(data.message);
-          $("#error").show();
-        } else if (data.status == "success") {
-          window.location = "http://quotebook.retrocraft.ca/settings.php?success";
+        if (data.status == "error") {            
+          alertbox(data.message, 'danger');
+        } else if (data.status == "success") {   
+          alertbox('Settings changed successfully', 'success');
         }
       }, 'json');
     }
@@ -51,10 +50,6 @@
     </div>
   </div>
   <div class="container">
-    <div class="alert alert-danger" id="error" style="display:none;"><strong>Error!</strong> <span id="errormsg"></span></div>
-    <?php if (isset($_GET['success'])): ?>
-    <div class="alert alert-success">Details changed successfully</div>
-    <?php endif; ?>
     <h1>Profile</h1>
     <div class="form-group row">
       <label for="name" class="col-xs-2 col-form-label">Username</label>
