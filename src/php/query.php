@@ -211,16 +211,16 @@ function quote($id) {
       if ($access >= EDIT) {
         switch ($row['status']) {
           case "Submitted":
-            $class = "warning";
+            $class = "yellow";
             break;
           case "Approved":
-            $class = "success";
+            $class = "light-green";
             break;
           case "Rejected":
-            $class = "danger";
+            $class = "red";
             break;
           case "Marked for Deletion":
-            $class = "default";
+            $class = "black";
             break;
         }
         $out .= ', "status": "' . $row['status'] . '"'
@@ -336,16 +336,16 @@ function myquotes() {
   while ($row = $stmt->fetch()) {    
     switch ($row['status']) {
       case "Submitted":
-        $class = "warning";
+        $class = "yellow";
         break;
       case "Approved":
-        $class = "success";
+        $class = "light-green";
         break;
       case "Rejected":
-        $class = "danger";
+        $class = "red";
         break;
       case "Marked for Deletion":
-        $class = "default";
+        $class = "black";
         break;
     }
 

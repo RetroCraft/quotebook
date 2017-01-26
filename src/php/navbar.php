@@ -1,21 +1,23 @@
 <div class="not-footer">
-<nav class="navbar navbar-light bg-faded">
-  <button class="navbar-toggler hidden-lg-up" type="button" data-toggle="collapse" data-target="#navbar"></button>
-  <div class="collapse navbar-toggleable-md container" id="navbar">
-    <a class="navbar-brand" href="/">Quotebook</a>
-    <ul class="nav navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link" href="/">Home</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/submit.php">Submit</a>
-      </li>
+<nav class="blue darken-4">
+  <div class="nav-wrapper" id="navbar">
+    <a class="brand-logo center" href="/">Quotebook</a>
+    <a href="#" data-activates="mobile" class="button-collapse"><i class="material-icons">menu</i></a>
+    <ul class="left hide-on-med-and-down">
+      <li><a href="/">Home</a></li>
+      <li><a href="/submit.php">Submit</a></li>
+      <li><a href="/dashboard.php">Dashboard</a></li>
     </ul>
-    <form class="form-inline float-lg-right">
-      <span class="navbar-text text-muted">
-        Logged in as <?php echo $_SESSION['user']['name']; ?>, <a href="/php/checklogin.php?logout">logout?</a>
-        <a class="btn btn-sm" href="/settings.php"><i class="material-icons" style="font-size: inherit">settings</i></a>
-      </span>
-    </form>
+    <ul class="right hide-on-med-and-down">
+      <li><a href="/settings.php"><i class="material-icons">settings</i></a></li>
+      <li><a href="/php/checklogin.php?logout"><i class="material-icons">exit_to_app</i></a></li>
+    </ul>
+    <ul class="side-nav" id="mobile">
+      <li><a href="/">Home</a></li>
+      <li><a href="/submit.php">Submit</a></li>
+      <li><a href="/dashboard.php">Dashboard</a></li>      
+      <li><a href="/settings.php">Settings</a></li>
+      <li><a href="/php/checklogin.php?logout">Logout</a></li>
+    </ul>
   </div>
 </nav>

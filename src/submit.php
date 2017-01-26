@@ -49,6 +49,7 @@
           select += '<option>' + people[i].name + '</option>';
         }
         $("#speaker").html(select);
+        $("#speaker").material_select();
       });
 
       // Setup submit button hook thingy
@@ -69,7 +70,7 @@
 </head>
 <body>
   <?php include('php/navbar.php'); ?>
-  <div class="header">
+  <div class="header blue blue-text text-lighten-4">
     <div class="container">
       <h1>Submit a Quote!</h1>
       <p>Mind you I have to approve all the things you type in here, and I would like to have eyes after this is all said and done.</p>
@@ -78,42 +79,56 @@
   </div>
   <div class="container">
     <h1>Big Long Form To Fill Out</h1>
-    <div class="form-group">
-      <label for="speaker">Who said it?</label>
-      <select id="speaker" class="custom-select form-control">
-        <option value="">Loading...</option>
-      </select>
+    <div class="row">
+      <div class="input-field col s12">
+        <select id="speaker">
+          <option value="" disabled selected>Loading...</option>
+        </select>
+        <label for="speaker">Who said it?</label>
+      </div>
     </div>
-    <div class="form-group">
-      <label for="quote">What'd they say?</label>
-      <input type="text" class="form-control" id="quote">
+    <div class="row">
+      <div class="input-field col s12">
+        <label for="quote">What'd they say?</label>
+        <input type="text" class="form-control" id="quote">
+      </div>
     </div>
-    <div class="form-group">
-      <label for="context">Context?</label>
-      <input type="text" class="form-control" id="context" placeholder="i.e. 'on the Skype group chat'">
+    <div class="row">
+      <div class="input-field col s12">
+        <label for="context">Context?</label>
+        <input type="text" class="form-control" id="context" placeholder="i.e. 'on the Skype group chat'">
+      </div>
     </div>
-    <div class="form-group">
-      <label for="timestamp">Timestamp?</label>
-      <input type="datetime-local" class="form-control" id="timestamp">
-      <p class="form-text text-muted">If you can't remember time, put midnight (00:00). If you can't remember date, put 1<sup>st</sup> of that month. If it happens a lot, and you want the context field used instead of the date (i.e. "every. single. day."), put 01/01/0001 00:00 (i.e. zeroes. lots of them)</p>
+    <div class="row">
+      <div class="input-field col s12">
+        <input type="datetime-local" class="form-control" id="timestamp">
+        <label for="timestamp" class="active">Timestamp?</label>
+        <p class="form-text text-muted">If you can't remember time, put midnight (00:00). If you can't remember date, put 1<sup>st</sup> of that month. If it happens a lot, and you want the context field used instead of the date (i.e. "every. single. day."), put 01/01/0001 00:00 (i.e. zeroes. lots of them)</p>
+      </div>
     </div>
-    <div class="form-group">
-      <label for="morestuff">Anything else you'd like to add?</label>
-      <!--Gosh this is a stupid decision let's pretend didn't happen...-->
-      <textarea id="morestuff" cols="30" rows="10" class="form-control code">### Header (use at least H3, so that it's not *too* big)
-*italics* **bold** ***blitalics*** ~~strikethrough~~
-> This is a big giant quote!
-| Tables        | Are           | Cool  |
-| ------------- |:-------------:| -----:|
-| col 3 is      | right-aligned | $1600 |
-| col 2 is      | centered      |   $12 |
-| idk why you   | would need    |  this |
-</textarea>
-      <p class="form-text text-muted">What you write in here is formatted with Markdown. Examples are included. If you don't know how to read an example, you can use Google for help. <a href="http://lmgtfy.com/?iie=1&q=Markdown+cheat+sheet" target="_blank">I should not have to tell you to do that.</a></p>
+    <div class="row">
+      <div class="input-field col s12">
+        <label for="morestuff">Anything else you'd like to add?</label>
+        <!--Gosh this is a stupid decision let's pretend didn't happen...-->
+        <textarea id="morestuff" cols="30" rows="10" class="materialize-textarea code">### Header (use at least H3, so that it's not *too* big)
+  *italics* **bold** ***blitalics*** ~~strikethrough~~
+  > This is a big giant quote!
+
+  | Tables        | Are           | Cool  |
+  | ------------- |:-------------:| -----:|
+  | col 3 is      | right-aligned | $1600 |
+  | col 2 is      | centered      |   $12 |
+  | idk why you   | would need    |  this |</textarea>
+        <p class="form-text text-muted">What you write in here is formatted with Markdown. Examples are included. If you don't know how to read an example, you can use Google for help. <a href="http://lmgtfy.com/?iie=1&q=Markdown+cheat+sheet" target="_blank">I should not have to tell you to do that.</a></p>
+      </div>
     </div>
-    <p>Preview of what you wrote above in case you <strong>STILL</strong> can't figure out Markdown <small class="text-muted">*sigh*</small></p>
-    <div class="markdown" id="markdown-preview"></div>
-    <button class="btn btn-lg btn-success" id="submit">BIG FAT SUBMIT BUTTON!!</button>
+    <div class="row">
+      <p>Preview of what you wrote above in case you <strong>STILL</strong> can't figure out Markdown <small class="text-muted">*sigh*</small></p>
+      <div class="markdown" id="markdown-preview"></div>
+    </div>
+    <div class="row center">
+      <button class="btn blue accent-4 waves-effect waves-light btn-large" id="submit">BIG FAT SUBMIT BUTTON!!</button>
+    </div>
   </div>
   <?php include('php/footer.php'); ?>
 </body>

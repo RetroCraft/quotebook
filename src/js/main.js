@@ -25,3 +25,7 @@ function query(params, callback) {
   }
 }, 'json');
 }
+
+$(document).ready(function() {
+  $(".button-collapse").sideNav();
+});

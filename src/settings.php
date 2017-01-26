@@ -38,7 +38,7 @@
 </head>
 <body>
   <?php include('php/navbar.php'); ?>
-  <div class="header">
+  <div class="header blue blue-text text-lighten-4">
     <div class="container">
       <h1>Settings</h1>
       <p>But seriously, why did I make this?</p>
@@ -46,36 +46,49 @@
   </div>
   <div class="container">
     <h1>Profile</h1>
-    <div class="form-group row">
-      <label for="name" class="col-xs-2 col-form-label">Username</label>
-      <div class="col-xs-10"><input type="text" class="form-control" value="<?php echo $user; ?>" id="name" disabled></div>
+    <div class="row">
+      <div class="input-field col s12">
+        <label for="name" >Username</label>
+        <input type="text" class="form-control" value="<?php echo $user; ?>" id="name" disabled>
+      </div>
     </div>
-    <div class="form-group row">
-      <label for="fullname" class="col-xs-2 col-form-label">Full Name</label>
-      <div class="col-xs-10"><input type="text" class="form-control" value="<?php echo $_SESSION['user']['fullname']; ?>" id="fullname" disabled></div>
+    <div class="row">
+      <div class="input-field col s12">
+        <label for="fullname" >Full Name</label>
+        <input type="text" class="form-control" value="<?php echo $_SESSION['user']['fullname']; ?>" id="fullname" disabled>
+      </div>
     </div>
-    <div class="form-group row">
-      <label for="profilepic" class="col-xs-2 col-form-label">Profile Picture (WIP)</label>
-      <div class="col-xs-10">
-        <input type="file" id="profilepic" class="form-control-file">
+    <div class="row">
+      <div class="file-field input-field col s12">
+        <div class="btn disabled">
+          <span>Profile Picture (WIP)</span>
+          <input type="file" id="profilepic" disabled>
+        </div>
+        <div class="file-path-wrapper">
+          <input type="text" class="file-path" disabled>
+        </div>
       </div>
     </div>
     <h1>Security</h1>
-    <div class="form-group row">
-      <label for="currpass" class="col-xs-2 col-form-label">Current Password</label>
-      <div class="col-xs-10"><input type="password" class="form-control" id="currpass"></div>
-    </div>
-    <div class="form-group row">
-      <label for="newpass" class="col-xs-2 col-form-label">New Password</label>
-      <div class="col-xs-10">
-        <input type="password" class="form-control pass" id="newpass">
-        <div class="form-control-feedback" id="notmatching" style="display:none;">Passwords do not match!</div>
+    <div class="row">
+      <div class="input-field col s12">
+        <label for="currpass" >Current Password</label>
+        <input type="password" class="form-control" id="currpass">
       </div>
     </div>
-    <div class="form-group row">
-      <label for="newpass2" class="col-xs-2 col-form-label">New Password Again</label>
-      <div class="col-xs-10"><input type="password" class="form-control pass" id="newpass2"></div>
-      <small class="form-text text-muted">...Because I Am Not Responsable For You Forgetting Your Password</small>
+    <div class="row">
+      <div class="input-field col s12">
+        <label for="newpass" >New Password</label>
+          <input type="password" class="form-control pass" id="newpass">
+          <div class="form-control-feedback" id="notmatching" style="display:none;">Passwords do not match!</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12">
+        <label for="newpass2" >New Password Again</label>
+        <input type="password" class="form-control pass" id="newpass2">
+        <small class="form-text text-muted">...Because I Am Not Responsable For You Forgetting Your Password</small>
+      </div>
     </div>
     <button class="btn btn-success btn-lg" id="update" onclick="update()" disabled>Update</button>
   </div>

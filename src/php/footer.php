@@ -1,7 +1,7 @@
 </div>
-<footer class="bg-inverse footer">
+<footer class="blue darken-4 blue-text footer">
   <div class="container">
-    <p class="text-muted">
+    <p>
       &copy; 2016 James Ah Yong.<br>
       Made with ♥. I think. Somebody explain "♥" to me again!
     </p>

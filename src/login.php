@@ -33,19 +33,19 @@
     <?php if (isset($_GET["logout"])): ?>
       <div class="alert alert-success"><strong>Yay!</strong> Logout successful</div>
     <?php endif; ?>
-    <div class="form">
-      <div class="form-group">
-        <label for="username" class="bmd-label-floating">Username</label>
-        <input type="text" id="username" class="form-control">
-      </div>
-      <div class="form-group">
-        <label for="password" class="bmd-label-floating">Password</label>
-        <input type="password" id="password" class="form-control">
-      </div>
-      <div class="form-group">
-        <button id="login" class="btn btn-lg btn-primary">Login</button>
+    <div class="row">
+      <div class="input-field col s12">
+        <label for="username">Username</label>
+        <input type="text" id="username">
       </div>
     </div>
+    <div class="row">
+      <div class="input-field col s12">
+        <label for="password">Password</label>
+        <input type="password" id="password">
+      </div>
+    </div>
+    <button id="login" class="btn waves-effect waves-light">Login</button>
   </div>
   <?php include('php/footer.php'); ?>
 </body>

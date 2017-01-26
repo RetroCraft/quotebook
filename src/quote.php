@@ -35,16 +35,16 @@
 
     switch ($row['status']) {
       case "Submitted":
-        $class = "warning";
+        $class = "yellow";
         break;
       case "Approved":
-        $class = "success";
+        $class = "light-green";
         break;
       case "Rejected":
-        $class = "danger";
+        $class = "red";
         break;
       case "Marked for Deletion":
-        $class = "default";
+        $class = "black";
         break;
     }
   } else {
@@ -75,54 +75,60 @@
 </head>
 <body>
   <?php include('php/navbar.php'); ?>
-  <div class="header">
+  <div class="header blue blue-text text-lighten-4">
     <div class="container">
-      <h1><?php echo $row["quote"]; ?></h1>
-      <p>
-        &mdash;<a href="speaker.php?id=<?php echo $row["speaker"]; ?>"><?php echo $row["fullname"]; ?></a>, 
-        <?php echo $row["context"];
-        if ($row["year"] > 1) {
-        echo ", " . $row["year"]; 
-        } ?>
-      </p>
+      <div class="row">
+        <h1><?php echo $row["quote"]; ?></h1>
+        <p>
+          &mdash;<a href="speaker.php?id=<?php echo $row["speaker"]; ?>"><?php echo $row["fullname"]; ?></a>, 
+          <?php echo $row["context"];
+          if ($row["year"] > 1) {
+          echo ", " . $row["year"]; 
+          } ?>
+        </p>
+      </div>
       <?php if ($admin): ?>
-      <hr>
-      <p>
-        <strong>Note:</strong> You own this quote. Go to the <a href="dashboard.php">Dashboard</a> to edit it.
-        <span class="tag tag-<?php echo $class; ?> tag-pill float-lg-right">
-          Status: <?php echo $row['status']; ?>
-        </span>
-      </p>
+      <hr><br>
+      <div class="row"><p>
+          <strong>Note:</strong> You own this quote. Go to the <a href="dashboard.php">Dashboard</a> to edit it.
+          <span class="chip <?php echo $class; ?> right">
+            Status: <?php echo $row['status']; ?>
+          </span>
+      </p></div>
       <?php endif; ?>
     </div>
   </div>
   <div class="container">
-    <h2>Description</h2>
-    <div class="markdown">
-      <?php 
-        if ($row["morestuff"] != "") {
-          echo Parsedown::instance()
-            ->setBreaksEnabled(true)
-            ->text($row["morestuff"]);
-        } else {
-          echo "No description provided. Sorry... ☹";
-        }
-      ?>
+    <div class="row">
+      <h2>Description</h2>
+      <div class="markdown">
+        <?php 
+          if ($row["morestuff"] != "") {
+            echo Parsedown::instance()
+              ->setBreaksEnabled(true)
+              ->text($row["morestuff"]);
+          } else {
+            echo "No description provided. Sorry... ☹";
+          }
+        ?>
+      </div>
     </div>
     <hr>
-    <h2>Info</h2>
-    <table class="table table-bordered table-hover">
-      <tbody>
-        <tr>
-          <th scope="row">Estimated Date/Time</th>
-          <td><?php echo $row["date"]; ?></td>
-        </tr>
-        <tr>
-          <th scope="row">Submitted By</th>
-          <td><?php echo $row["submittedby"]; ?></td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="row">
+      <h2>Info</h2>
+      <table class="highlight">
+        <tbody>
+          <tr>
+            <th scope="row">Estimated Date/Time</th>
+            <td><?php echo $row["date"]; ?></td>
+          </tr>
+          <tr>
+            <th scope="row">Submitted By</th>
+            <td><?php echo $row["submittedby"]; ?></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
   <?php include('php/footer.php'); ?>
 </body>
