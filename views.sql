@@ -23,7 +23,9 @@ select q.id id,
     q.submittedby submittedby,
     q.createtime createtime,
     q.modifytime modifytime,
-    q.status status
+    q.status status,
+    c.colour colour
   from quotes as q
   join users u on u.name = q.speaker
+  join colours c on c.status = q.status
   order by q.createtime;

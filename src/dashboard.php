@@ -40,7 +40,7 @@
           if (q.status != "Marked for Deletion") {
             html += '<a href="#" onclick="edit(' + i + ', 0)"><i class="material-icons">edit</i></a>'
                   + '<a href="#" onclick="del(' + i + ', 0)"><i class="material-icons">delete</i></a>'
-                  + '<span class="chip ' + q.class + ' right">' + q.status + '</span>';
+                  + '<span class="chip ' + q.colour + ' right">' + q.status + '</span>';
           }
           html += '</div></div>';
         }

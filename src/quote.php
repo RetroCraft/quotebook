@@ -32,21 +32,6 @@
   if ($row = $stmt->fetch()) {
     // User owns quote, allow edit functions
     $admin = true;
-
-    switch ($row['status']) {
-      case "Submitted":
-        $class = "yellow";
-        break;
-      case "Approved":
-        $class = "light-green";
-        break;
-      case "Rejected":
-        $class = "red";
-        break;
-      case "Marked for Deletion":
-        $class = "black";
-        break;
-    }
   } else {
     $admin = false;
 
@@ -91,7 +76,7 @@
       <hr><br>
       <div class="row"><p>
           <strong>Note:</strong> You own this quote. Go to the <a href="dashboard.php">Dashboard</a> to edit it.
-          <span class="chip <?php echo $class; ?> right">
+          <span class="chip <?php echo $row['colour']; ?> right">
             Status: <?php echo $row['status']; ?>
           </span>
       </p></div>

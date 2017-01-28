@@ -24,7 +24,12 @@ switch($_POST["action"]) {
     $sort = "`" . str_replace("`","``",$sorting[0]) . "`";
     $by = $sorting[1];
 
-    main($_POST["filters:search"], $_POST["filters:speaker"], $sort, $by, $_POST["limit"]);
+    if (!isset($_POST["page"]))
+      $page = 1;
+    else
+      $page = $_POST["page"];
+
+    main($_POST["filters:search"], $_POST["filters:speaker"], $sort, $by, $_POST["limit"], $page);
     break;
 
   case "quote":
@@ -91,7 +96,7 @@ else:
   fail("Unspecified action");
 endif;
 
-function main($search, $speaker, $sort, $by, $limit) {
+function main($search, $speaker, $sort, $by, $limit, $page) {
   global $dbh;
   $out = '{"status": "success", "authors": [';
 
@@ -114,13 +119,15 @@ function main($search, $speaker, $sort, $by, $limit) {
   $column = $sort;
   $direction = $by;
 
+  $offset = (int)$limit * ((int)$page - 1);
+
   $query = 'SELECT id, quote, context, name, year 
             FROM vw_quotes 
             WHERE name LIKE :speaker 
               AND status = "Approved"
               AND (quote LIKE :quote OR context LIKE :quote)
             ORDER BY ' . $column . ' ' . $by . '
-            LIMIT ' . (int)$limit . ';';
+            LIMIT ' . (int)$limit . ' OFFSET ' . $offset . ';';
 
   if ($speaker == "---") {
     $speakerGlob = "%";
@@ -154,7 +161,19 @@ function main($search, $speaker, $sort, $by, $limit) {
   }
 
   $out = rtrim($out, ",");
-  $out .= "]}";
+
+  try {
+    $stmt = $dbh->prepare("SELECT COUNT(*) FROM quotes");
+    $stmt->execute();
+
+    $row = $stmt->fetch();
+    $total = $row["COUNT(*)"];
+  } catch (PDOException $e) {
+    fail($e->getMessage());
+  }
+
+
+  $out .= '], "page": ' . $page . ', "total": ' . $total . '}';
 
   die($out);
 }
@@ -198,7 +217,7 @@ function quote($id) {
   if ($access > NONE) {
     // Grab quote data
     try {
-      $stmt = $dbh->prepare('SELECT id, quote, name, fullname, context, morestuff, date, year, submittedby, status FROM vw_quotes WHERE id = :id');
+      $stmt = $dbh->prepare('SELECT id, quote, name, fullname, context, morestuff, date, year, submittedby, status, colour FROM vw_quotes WHERE id = :id');
       $stmt->bindParam(":id", $id, PDO::PARAM_STR);
       $stmt->setFetchMode(PDO::FETCH_ASSOC);
       $stmt->execute();
@@ -220,22 +239,8 @@ function quote($id) {
             . ', "date": "' . $row['date'] . '"'
             . ', "year": ' . $row['year'];
       if ($access >= EDIT) {
-        switch ($row['status']) {
-          case "Submitted":
-            $class = "yellow";
-            break;
-          case "Approved":
-            $class = "light-green";
-            break;
-          case "Rejected":
-            $class = "red";
-            break;
-          case "Marked for Deletion":
-            $class = "black";
-            break;
-        }
         $out .= ', "status": "' . $row['status'] . '"'
-              . ', "class": "' . $class. '"';
+              . ', "colour": "' . $row['colour']. '"';
       }
 
       if ($access >= ADMIN) {
@@ -334,7 +339,7 @@ function myquotes() {
   $user = $_SESSION['user']['name'];
 
   try {
-    $stmt = $dbh->prepare("SELECT quote, morestuff, status, fullname, id FROM vw_quotes WHERE submittedby = :user;");    
+    $stmt = $dbh->prepare("SELECT quote, morestuff, status, fullname, id, colour FROM vw_quotes WHERE submittedby = :user;");    
     $stmt->bindParam(":user", $user, PDO::PARAM_STR);
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->execute();
@@ -345,21 +350,6 @@ function myquotes() {
   $out = '{"status": "success", "quotes": [';
 
   while ($row = $stmt->fetch()) {    
-    switch ($row['status']) {
-      case "Submitted":
-        $class = "yellow";
-        break;
-      case "Approved":
-        $class = "light-green";
-        break;
-      case "Rejected":
-        $class = "red";
-        break;
-      case "Marked for Deletion":
-        $class = "black";
-        break;
-    }
-
     if ($row['morestuff'] != "")
       $excerpt = str_replace('"', '\\"', str_replace("\n", "\\n", htmlspecialchars(substr($row['morestuff'], 0, 75)))) . '...';
     else
@@ -370,7 +360,7 @@ function myquotes() {
           . '"status": "' . $row['status'] . '",'
           . '"name": "' . $row['fullname'] . '",'
           . '"id": "' . $row['id'] . '",'
-          . '"class": "' . $class . '"},';
+          . '"colour": "' . $row['colour'] . '"},';
   }
 
   $out = rtrim($out, ",");
