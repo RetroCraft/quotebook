@@ -1,9 +1,3 @@
-@mixin column-count($ct) {
-  -webkit-column-count: $ct;
-  -moz-column-count: $ct;
-  column-count: $ct;
-}
-
 @media #{$small-and-down} {
   .card-columns {
     @include column-count(1);
