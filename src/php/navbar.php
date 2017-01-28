@@ -1,4 +1,4 @@
-<div class="not-footer">
+<main>
 <nav class="blue darken-4">
   <div class="nav-wrapper" id="navbar">
     <a class="brand-logo center" href="/">Quotebook</a>

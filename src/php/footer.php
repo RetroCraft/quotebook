@@ -1,4 +1,4 @@
-</div>
+</main>
 <footer class="blue darken-4 blue-text footer">
   <div class="container">
     <p>

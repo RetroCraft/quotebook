@@ -27,6 +27,7 @@
   </script>
 </head>
 <body>
+  <main>
   <div class="container">
     <h1 style="margin-top: 10%">Login</h1>
     <hr>
