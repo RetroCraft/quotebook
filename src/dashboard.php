@@ -139,13 +139,13 @@
 </head>
 <body>
   <?php include('php/navbar.php'); ?>
-  <div class="header blue blue-text text-lighten-4">
+  <div class="header">
     <div class="container">
       <h1>Dashboard</h1>
       <p>This page does is under construction and <strong>might</strong> not work. (Delete button does though!)</p>
     </div>
   </div>
-  <div class="container content">
+  <div class="container">
     <h2>Your Quotes</h2>
     <div class="quotes card-columns"></div>
   </div>

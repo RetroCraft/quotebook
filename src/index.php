@@ -65,7 +65,7 @@
 </head>
 <body>
   <?php include('php/navbar.php'); ?>
-  <div class="header blue blue-text text-lighten-4">
+  <div class="header">
     <div class="container">
       <div class="row">
         <h1>Quotebook</h1>
@@ -110,6 +110,7 @@
             <option selected>20</option>
             <option>50</option>
             <option>100</option>
+            <option value="2147483647">All</option>
           </select>
           <label>Quotes on Page</label>
         </div>

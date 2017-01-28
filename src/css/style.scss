@@ -1,21 +1,5 @@
-$small-screen-up: 601px !default;
-$medium-screen-up: 993px !default;
-$large-screen-up: 1201px !default;
-$small-screen: 600px !default;
-$medium-screen: 992px !default;
-$large-screen: 1200px !default;
-
-$medium-and-up: "only screen and (min-width : #{$small-screen-up})" !default;
-$large-and-up: "only screen and (min-width : #{$medium-screen-up})" !default;
-$small-and-down: "only screen and (max-width : #{$small-screen})" !default;
-$medium-and-down: "only screen and (max-width : #{$medium-screen})" !default;
-$medium-only: "only screen and (min-width : #{$small-screen-up}) and (max-width : #{$medium-screen})" !default;
-
-@mixin column-count($ct) {
-  -webkit-column-count: $ct;
-  -moz-column-count: $ct;
-  column-count: $ct;
-}
+@import '../../node_modules/materialize-css/sass/materialize';
+@import '_card-columns';
 
 * {
   margin: 0;
@@ -36,6 +20,7 @@ a {
 }
 
 .header {
+  @extend .blue, .blue-text, .text-lighten-4;
   padding: 2rem 15px;
   width: 100%;
   text-align: center;
@@ -91,40 +76,6 @@ main {
   left: 0;
   padding: 1rem;
   text-align: center;
-}
-
-.card-columns {
-  column-break-inside: avoid;
-}
-
-.card {
-  display: inline-block;
-  word-break: break-word;
-  margin: 0.5rem;
-  width: 99%;
-  transition: all 0.5s;
-
-  &:hover {
-    background-color: #82b1ff;
-    color: white;
-    box-shadow: 0 16px 24px 2px rgba(0,0,0,0.14), 0 6px 30px 5px rgba(0,0,0,0.12), 0 8px 10px -5px rgba(0,0,0,0.3);
-  }
-}
-
-@media #{$small-and-down} {
-  .card-columns {
-    @include column-count(1);
-  }
-}
-@media #{$medium-and-up} {
-  .card-columns {
-    @include column-count(2);
-  }
-}
-@media #{$large-and-up} {
-  .card-columns {
-    @include column-count(3);
-  }
 }
 
 .quotes {

@@ -1,0 +1,41 @@
+@mixin column-count($ct) {
+  -webkit-column-count: $ct;
+  -moz-column-count: $ct;
+  column-count: $ct;
+}
+
+@media #{$small-and-down} {
+  .card-columns {
+    @include column-count(1);
+  }
+}
+
+@media #{$medium-and-up} {
+  .card-columns {
+    @include column-count(2);
+  }
+}
+
+@media #{$large-and-up} {
+  .card-columns {
+    @include column-count(3);
+  }
+}
+
+.card-columns {
+  column-break-inside: avoid;
+}
+
+.card {
+  display: inline-block;
+  word-break: break-word;
+  margin: 0.5rem;
+  width: 99%;
+  transition: all 0.5s;
+
+  &:hover {
+    @extend .z-depth-2;
+    background-color: #82b1ff;
+    color: white;
+  }
+}
