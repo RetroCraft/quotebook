@@ -34,15 +34,15 @@
         quotes = data.quotes;
         for (var i = 0; i < quotes.length; i++) {
           q = quotes[i];
-          html += '<div class="row"><div class="col s12"><div class="card"><div class="card-content">'
-                + '<span class="card-title"><a href="/quote.php?id=' + q.id + '">' + q.quote + '</a>'
-                + '<span class="chip ' + q.class + ' right">' + q.status + '</span></span>'
+          html += '<div class="card"><div class="card-content">'
+                + '<span class="card-title"><a href="/quote.php?id=' + q.id + '">' + q.quote + '</a></span>'
                 + '<p>' + q.excerpt + '</p>' + '<p>&ndash;' + q.name + '</p></div><div class="card-action">';
           if (q.status != "Marked for Deletion") {
-            html += '<a href="#" onclick="edit(' + i + ', 0)"><i class="material-icons">edit</i></button>'
-                  + '<a href="#" onclick="del(' + i + ', 0)"><i class="material-icons">delete</i></button>';
+            html += '<a href="#" onclick="edit(' + i + ', 0)"><i class="material-icons">edit</i></a>'
+                  + '<a href="#" onclick="del(' + i + ', 0)"><i class="material-icons">delete</i></a>'
+                  + '<span class="chip ' + q.class + ' right">' + q.status + '</span>';
           }
-          html += '</div></div></div></div>';
+          html += '</div></div>';
         }
         $(".quotes").html(html);
       });
@@ -147,7 +147,7 @@
   </div>
   <div class="container content">
     <h2>Your Quotes</h2>
-    <div class="quotes"></div>
+    <div class="quotes card-columns"></div>
   </div>
   <?php include('php/footer.php'); ?>
   <div class="modal modal-fixed-footer" id="del-modal">

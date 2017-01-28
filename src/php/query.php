@@ -350,7 +350,7 @@ function myquotes() {
     }
 
     if ($row['morestuff'] != "")
-      $excerpt = str_replace("\n", "\\n", htmlspecialchars(substr($row['morestuff'], 0, 75))) . '...';
+      $excerpt = str_replace('"', '\\"', str_replace("\n", "\\n", htmlspecialchars(substr($row['morestuff'], 0, 75)))) . '...';
     else
       $excerpt = '';
 

@@ -95,18 +95,19 @@ a {
 
 .card-columns {
   column-break-inside: avoid;
-  .card {
-    display: inline-block;
-    word-break: break-word;
-    margin: 0.5rem;
-    width: 99%;
-    transition: all 0.5s;
+}
 
-    &:hover {
-      background-color: #82b1ff;
-      color: white;
-      box-shadow: 0 16px 24px 2px rgba(0,0,0,0.14), 0 6px 30px 5px rgba(0,0,0,0.12), 0 8px 10px -5px rgba(0,0,0,0.3);
-    }
+.card {
+  display: inline-block;
+  word-break: break-word;
+  margin: 0.5rem;
+  width: 99%;
+  transition: all 0.5s;
+
+  &:hover {
+    background-color: #82b1ff;
+    color: white;
+    box-shadow: 0 16px 24px 2px rgba(0,0,0,0.14), 0 6px 30px 5px rgba(0,0,0,0.12), 0 8px 10px -5px rgba(0,0,0,0.3);
   }
 }
 
