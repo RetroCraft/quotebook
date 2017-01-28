@@ -21,6 +21,7 @@
 }
 
 .card {
+  @extend .z-depth-1;
   display: inline-block;
   word-break: break-word;
   margin: 0.5rem;
@@ -29,7 +30,7 @@
   color: $primary-color-light;
 
   &:hover {
-    @extend .z-depth-2;
+    @extend .z-depth-3;
     background-color: $primary-color-light;
     color: white;
   }

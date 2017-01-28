@@ -33,8 +33,8 @@
       query({
         action: "main",
         "filters:search": $("#search").val(),
-        "filters:speaker": selectedAuthor,
-        "sort": $("#sort").val(),
+        "filters:speaker": (selectedAuthor ? selectedAuthor : "---"),
+        "sort": ($("#sort").val() ? $("#sort").val() : "createtime|DESC"),
         "limit": $("#num").val()
       }, function(data) {
         var quoteHtml = '', authorHtml = '<option>---</option>';
@@ -93,13 +93,13 @@
         </div>
         <div class="input-field inline">
           <select id="author" class="filter">
-            <option value="---">---</option>
+            <option value="---" selected>---</option>
           </select>
           <label>Speaker</label>
         </div>
         <div class="input-field inline">
           <select id="sort" class="filter">
-            <option value="createtime|DESC">Latest</option>
+            <option value="createtime|DESC" selected>Latest</option>
             <option value="date|DESC">Newest</option>
           </select>
           <label>Sort</label>
