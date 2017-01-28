@@ -111,6 +111,14 @@
             <th scope="row">Submitted By</th>
             <td><?php echo $row["submittedby"]; ?></td>
           </tr>
+          <tr>
+            <th scope="row">Submitted Time</th>
+            <td><?php echo $row["createtime"]; ?></td>
+          </tr>
+          <tr>
+            <th scope="row">Last Modified</th>
+            <td><?php echo $row["modifytime"]; ?></td>
+          </tr>
         </tbody>
       </table>
     </div>
