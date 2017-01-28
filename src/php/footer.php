@@ -1,5 +1,5 @@
 </main>
-<footer class="blue darken-4 blue-text footer">
+<footer class="footer">
   <div class="container">
     <p>
       &copy; 2016 James Ah Yong.<br>

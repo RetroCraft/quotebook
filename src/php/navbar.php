@@ -1,5 +1,5 @@
 <main>
-<nav class="blue darken-4">
+<nav class="navbar">
   <div class="nav-wrapper" id="navbar">
     <a class="brand-logo center" href="/">Quotebook</a>
     <a href="#" data-activates="mobile" class="button-collapse"><i class="material-icons">menu</i></a>

@@ -12,15 +12,18 @@ body {
 blockquote {
   padding: 0.5rem 0.5rem;
   margin-bottom: 1rem;
-  border-left: 0.25rem solid #eceeef;
+  border-left: 0.25rem solid $primary-color-light;
 }
 
-a {
-  color: #2962ff;
+.navbar {
+  @extend .z-depth-2;
+  background-color: $primary-color-dark;
+  color: white;
 }
 
 .header {
-  @extend .blue, .blue-text, .text-lighten-4;
+  background-color: $primary-color-light;
+  color: white;
   padding: 2rem 15px;
   width: 100%;
   text-align: center;
@@ -53,6 +56,10 @@ a {
     }
   }
 
+  a {
+    color: $primary-color-dark
+  }
+
   & + container {
     margin-top: 1rem;
   }
@@ -76,6 +83,8 @@ main {
   left: 0;
   padding: 1rem;
   text-align: center;
+  background-color: $primary-color-dark;
+  color: $primary-color;
 }
 
 .quotes {

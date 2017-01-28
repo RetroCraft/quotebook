@@ -38,7 +38,7 @@
 </head>
 <body>
   <?php include('php/navbar.php'); ?>
-  <div class="header blue blue-text text-lighten-4">
+  <div class="header">
     <div class="container">
       <h1>Settings</h1>
       <p>But seriously, why did I make this?</p>

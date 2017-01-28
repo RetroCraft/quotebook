@@ -70,7 +70,7 @@
 </head>
 <body>
   <?php include('php/navbar.php'); ?>
-  <div class="header blue blue-text text-lighten-4">
+  <div class="header">
     <div class="container">
       <h1>Submit a Quote!</h1>
       <p>Mind you I have to approve all the things you type in here, and I would like to have eyes after this is all said and done.</p>
@@ -127,7 +127,7 @@
       <div class="markdown" id="markdown-preview"></div>
     </div>
     <div class="row center">
-      <button class="btn blue accent-4 waves-effect waves-light btn-large" id="submit">BIG FAT SUBMIT BUTTON!!</button>
+      <button class="btn waves-effect waves-light btn-large" id="submit">BIG FAT SUBMIT BUTTON!!</button>
     </div>
   </div>
   <?php include('php/footer.php'); ?>
