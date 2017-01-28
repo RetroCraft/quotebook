@@ -16,10 +16,15 @@ if (isset($_POST["action"])):
 switch($_POST["action"]) {
 
   case "main":
-    if (!isset($_POST["filters:search"]) || !isset($_POST["filters:speaker"]))
+    if (!isset($_POST["filters:search"]) || !isset($_POST["filters:speaker"]) || !isset($_POST["sort"]) || !isset($_POST["limit"]))
       fail("Missing parameters");
 
-    main($_POST["filters:search"], $_POST["filters:speaker"]);
+    $sorting = explode("|", $_POST["sort"]);
+
+    $sort = "`" . str_replace("`","``",$sorting[0]) . "`";
+    $by = $sorting[1];
+
+    main($_POST["filters:search"], $_POST["filters:speaker"], $sort, $by, $_POST["limit"]);
     break;
 
   case "quote":
@@ -86,7 +91,7 @@ else:
   fail("Unspecified action");
 endif;
 
-function main($search, $speaker) {
+function main($search, $speaker, $sort, $by, $limit) {
   global $dbh;
   $out = '{"status": "success", "authors": [';
 
@@ -106,11 +111,16 @@ function main($search, $speaker) {
   $out = rtrim($out, ",");
   $out .= '], "quotes": [';
 
+  $column = $sort;
+  $direction = $by;
+
   $query = 'SELECT id, quote, context, name, year 
             FROM vw_quotes 
             WHERE name LIKE :speaker 
               AND status = "Approved"
-              AND (quote LIKE :quote OR context LIKE :quote)';
+              AND (quote LIKE :quote OR context LIKE :quote)
+            ORDER BY ' . $column . ' ' . $by . '
+            LIMIT ' . (int)$limit . ';';
 
   if ($speaker == "---") {
     $speakerGlob = "%";
@@ -128,6 +138,7 @@ function main($search, $speaker) {
     $stmt = $dbh->prepare($query);
     $stmt->bindParam(":speaker", $speakerGlob, PDO::PARAM_STR);
     $stmt->bindParam(":quote", $searchGlob, PDO::PARAM_STR);
+    $stmt->bindParam(":lim", $lim, PDO::PARAM_INT);
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->execute();
   } catch (PDOException $e) {

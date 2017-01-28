@@ -21,6 +21,9 @@ select q.id id,
     q.date `date`,
     year(q.date) `year`,
     q.submittedby submittedby,
+    q.createtime createtime,
+    q.modifytime modifytime,
     q.status status
   from quotes as q
-  join users u on u.name = q.speaker;
+  join users u on u.name = q.speaker
+  order by q.createtime;

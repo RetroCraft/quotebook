@@ -33,7 +33,9 @@
       query({
         action: "main",
         "filters:search": $("#search").val(),
-        "filters:speaker": selectedAuthor
+        "filters:speaker": selectedAuthor,
+        "sort": $("#sort").val(),
+        "limit": $("#num").val()
       }, function(data) {
         var quoteHtml = '', authorHtml = '<option>---</option>';
 
@@ -94,6 +96,22 @@
             <option value="---">---</option>
           </select>
           <label>Speaker</label>
+        </div>
+        <div class="input-field inline">
+          <select id="sort" class="filter">
+            <option value="createtime|DESC">Latest</option>
+            <option value="date|DESC">Newest</option>
+          </select>
+          <label>Sort</label>
+        </div>
+        <div class="input-field inline">
+          <select id="num" class="filter">
+            <option>10</option>
+            <option selected>20</option>
+            <option>50</option>
+            <option>100</option>
+          </select>
+          <label>Quotes on Page</label>
         </div>
       </div>
     </div>
