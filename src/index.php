@@ -11,8 +11,9 @@
 <head>
   <?php include('php/header.php'); ?>
   <script>
+    var currPage;
     $(document).ready(function() {
-      getQuotes();
+      getQuotes(1);
 
       $('.filter').each(function() {
         var filter = $(this);
@@ -20,14 +21,15 @@
         filter.bind("change click keyup input paste propertychange", function() {
           if (filter.data('oldVal') != filter.val()) {
             filter.data('oldVal', filter.val());
-            getQuotes();
+            getQuotes(1);
           }
         });
       });
     });
 
-    function getQuotes() {
+    function getQuotes(page) {
       var selectedAuthor = $("#author").val();
+      var limit = $("#num").val();
 
       // Get the things
       query({
@@ -35,9 +37,10 @@
         "filters:search": $("#search").val(),
         "filters:speaker": (selectedAuthor ? selectedAuthor : "---"),
         "sort": ($("#sort").val() ? $("#sort").val() : "createtime|DESC"),
-        "limit": $("#num").val()
+        "limit": limit,
+        "page": page
       }, function(data) {
-        var quoteHtml = '', authorHtml = '<option>---</option>';
+        var quoteHtml = '', authorHtml = '<option>---</option>', paginationHtml = '';
 
         // Loop through quotes
         for (var i = 0; i < data.quotes.length; i++) {
@@ -59,6 +62,20 @@
         $("#author").html(authorHtml);
         $("#author").val(selectedAuthor);
         $("#author").material_select();
+
+        // Loop through pages
+        var pages = Math.ceil(data.total / limit);
+        currPage = data.page;
+
+        paginationHtml += '<li class="' + (currPage == 1 ? 'disabled' : 'waves-effect') + '"><a href="#!" onclick="getQuotes(currPage - 1)"><i class="material-icons">chevron_left</i></a></li>';
+
+        for (var page = 1; page <= pages; page++) {
+          paginationHtml += '<li class="' + (page == currPage ? 'active' : 'waves-effect') + '"><a href="#!" onclick="getQuotes(' + page + ')">' + page + '</a></li>';
+        }
+
+        paginationHtml += '<li class="' + (currPage == pages ? 'disabled' : 'waves-effect') + '"><a href="#!" onclick="getQuotes(currPage + 1)"><i class="material-icons">chevron_right</i></a></li>';
+
+        $("#pagination").html(paginationHtml);
       });
     }
   </script>
@@ -118,6 +135,9 @@
     </div>
     <div class="row">
       <div id="quotes" class="col s12 card-columns center"></div>
+    </div>
+    <div class="row center">
+      <ul class="pagination" id="pagination"></ul>
     </div>
   </div>
   <?php include('php/footer.php'); ?>
