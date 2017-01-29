@@ -29,4 +29,5 @@ function query(params, callback) {
 $(document).ready(function() {
   $(".button-collapse").sideNav();
   $("select").material_select();
+  $(".navbar").pushpin();
 });

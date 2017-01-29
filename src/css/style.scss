@@ -16,9 +16,18 @@ blockquote {
 }
 
 .navbar {
-  @extend .z-depth-2;
   background-color: $primary-color-dark;
   color: white;
+  z-index: 10;
+
+  li {
+    i {
+      float: left;
+    }
+    span {
+      margin-left: 15px;
+    }
+  }
 }
 
 .header {
