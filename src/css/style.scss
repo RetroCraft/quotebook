@@ -1,4 +1,6 @@
-@import '../../lib/materialize/materialize';
+@import '../../node_modules/materialize-css/sass/components/color';
+@import 'variables';
+@import '../../node_modules/materialize-css/sass/materialize';
 @import 'card-columns';
 
 * {
@@ -33,13 +35,14 @@ blockquote {
 .header {
   background-color: $primary-color-light;
   color: white;
-  padding: 2rem 15px;
+  padding: 1rem 15px;
+  padding-top: calc(1rem + 56px);
   width: 100%;
   text-align: center;
   margin-bottom: 1.5rem;
 
-  @media (min-width: 576px) {
-    padding-top: 4rem;
+  @media #{$medium-and-up} {
+    padding-top: calc(4rem + 64px);
     padding-bottom: 4rem;
     margin-bottom: 3rem;
     text-align: left;
@@ -50,7 +53,7 @@ blockquote {
     font-weight: normal;
     color: white;
 
-    @media (min-width: 576px) {
+    @media #{$medium-and-up} {
       font-size: 4rem;
     }
   }
@@ -60,7 +63,7 @@ blockquote {
     font-size: 1.25rem;
     font-weight: 300;
 
-    @media (min-width: 576px) {
+    @media #{$medium-and-up} {
       font-size: 1.5rem;
     }
   }
@@ -102,6 +105,18 @@ main {
   }
   .list-group-item-action:hover .edit-icon {
     display: inline-block;
+  }
+}
+
+.status {
+  @extend .chip;
+  float: right;
+
+  @media #{$small-and-down} {
+    display: block;
+    width: 100%;
+    margin: 0.5rem 0.25rem 0rem;
+    float: none;
   }
 }
 
