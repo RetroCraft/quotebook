@@ -76,7 +76,7 @@
       <hr><br>
       <div class="row"><p>
           <strong>Note:</strong> You own this quote. Go to the <a href="dashboard.php">Dashboard</a> to edit it.
-          <span class="chip <?php echo $row['colour']; ?> right">
+          <span class="status <?php echo $row['colour']; ?>">
             Status: <?php echo $row['status']; ?>
           </span>
       </p></div>

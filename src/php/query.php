@@ -128,7 +128,7 @@ function main($search, $speaker, $sort, $by, $limit, $page) {
             ORDER BY ' . $column . ' ' . $by . '
             LIMIT ' . (int)$limit . ' OFFSET ' . $offset . ';';
 
-  if ($speaker == "---") {
+  if ($speaker == "") {
     $speakerGlob = ".*";
   } else {
     $speakerGlob = $speaker;

@@ -15,6 +15,7 @@
     $(document).ready(function() {
       getQuotes(1);
 
+      // Setup select watching
       $('.filter').each(function() {
         var filter = $(this);
         filter.data('oldVal', filter.val());
@@ -24,6 +25,13 @@
             getQuotes(1);
           }
         });
+      });
+
+      // Setup author watching
+      $('#author').change(function() {
+          if ($('option:not(:first)', this).is(':selected')) {
+              $('option:first', this).prop('selected', false);
+          }
       });
     });
 
@@ -38,12 +46,12 @@
       query({
         action: "main",
         "filters:search": $("#search").val(),
-        "filters:speaker": (authors ? authors : "---"),
+        "filters:speaker": (authors ? authors : ""),
         "sort": ($("#sort").val() ? $("#sort").val() : "createtime|DESC"),
         "limit": limit,
         "page": page
       }, function(data) {
-        var quoteHtml = '', authorHtml = '<option disabled>---</option>', paginationHtml = '';
+        var quoteHtml = '', authorHtml = '<option value="" disabled>All</option>', paginationHtml = '';
 
         // Loop through quotes
         for (var i = 0; i < data.quotes.length; i++) {
@@ -112,7 +120,7 @@
       </div>
       <div class="input-field inline col s12 m6 l3">
         <select id="author" class="filter" multiple>
-          <option value="---" disabled selected>---</option>
+          <option value="" disabled>All</option>
         </select>
         <label>Speaker</label>
       </div>
