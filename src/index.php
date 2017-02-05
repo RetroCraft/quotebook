@@ -28,19 +28,22 @@
     });
 
     function getQuotes(page) {
-      var selectedAuthor = $("#author").val();
       var limit = $("#num").val();
+
+      // Parse author array
+      var selectedAuthors = $("#author").val();
+      var authors = selectedAuthors.join("|");
 
       // Get the things
       query({
         action: "main",
         "filters:search": $("#search").val(),
-        "filters:speaker": (selectedAuthor ? selectedAuthor : "---"),
+        "filters:speaker": (authors ? authors : "---"),
         "sort": ($("#sort").val() ? $("#sort").val() : "createtime|DESC"),
         "limit": limit,
         "page": page
       }, function(data) {
-        var quoteHtml = '', authorHtml = '<option>---</option>', paginationHtml = '';
+        var quoteHtml = '', authorHtml = '<option disabled>---</option>', paginationHtml = '';
 
         // Loop through quotes
         for (var i = 0; i < data.quotes.length; i++) {
@@ -56,11 +59,11 @@
 
         // Loop through authors
         for (var j = 0; j < data.authors.length; j++) {
-          authorHtml += '<option>' + data.authors[j].name + '</option>';
+          authorHtml += '<option value="' + data.authors[j].name + '">' + data.authors[j].name + ' (' + data.authors[j].num_quotes + ')</option>';
         }
 
         $("#author").html(authorHtml);
-        $("#author").val(selectedAuthor);
+        $("#author").val(selectedAuthors);
         $("#author").material_select();
 
         // Loop through pages
@@ -103,34 +106,32 @@
     <?php endif; ?>
 
     <div class="row">
-      <div class="form-inline">
-        <div class="input-field inline">
-          <input type="text" class="filter" id="search">
-          <label>Search</label>
-        </div>
-        <div class="input-field inline">
-          <select id="author" class="filter">
-            <option value="---" selected>---</option>
-          </select>
-          <label>Speaker</label>
-        </div>
-        <div class="input-field inline">
-          <select id="sort" class="filter">
-            <option value="createtime|DESC" selected>Latest</option>
-            <option value="date|DESC">Newest</option>
-          </select>
-          <label>Sort</label>
-        </div>
-        <div class="input-field inline">
-          <select id="num" class="filter">
-            <option>10</option>
-            <option selected>20</option>
-            <option>50</option>
-            <option>100</option>
-            <option value="2147483647">All</option>
-          </select>
-          <label>Quotes on Page</label>
-        </div>
+      <div class="input-field inline col s12 m6 l3">
+        <input type="text" class="filter" id="search">
+        <label>Search</label>
+      </div>
+      <div class="input-field inline col s12 m6 l3">
+        <select id="author" class="filter" multiple>
+          <option value="---" disabled selected>---</option>
+        </select>
+        <label>Speaker</label>
+      </div>
+      <div class="input-field inline col s12 m6 l3">
+        <select id="sort" class="filter">
+          <option value="createtime|DESC" selected>Latest</option>
+          <option value="date|DESC">Newest</option>
+        </select>
+        <label>Sort</label>
+      </div>
+      <div class="input-field inline col s12 m6 l3">
+        <select id="num" class="filter">
+          <option>10</option>
+          <option selected>20</option>
+          <option>50</option>
+          <option>100</option>
+          <option value="2147483647">All</option>
+        </select>
+        <label>Quotes on Page</label>
       </div>
     </div>
     <div class="row">

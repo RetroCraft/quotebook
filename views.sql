@@ -3,7 +3,7 @@ as
 select u.id id,
     u.name name,
     u.fullname fullname,
-    count(*) num_quotes
+    sum(case q.status when "Approved" then 1 else 0 end) num_quotes
   from users u
   join quotes q on q.speaker = u.name
   group by u.name

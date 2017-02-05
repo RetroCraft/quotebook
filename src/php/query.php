@@ -101,16 +101,15 @@ function main($search, $speaker, $sort, $by, $limit, $page) {
   $out = '{"status": "success", "authors": [';
 
   try {
-    $stmt = $dbh->prepare("SELECT * FROM vw_users;");
+    $stmt = $dbh->prepare("SELECT name, num_quotes FROM vw_users WHERE num_quotes >= 1 ORDER BY num_quotes DESC;");
     $stmt->execute();
   } catch (PDOException $e) {
     fail($e->getMessage());
   }
 
   while ($row = $stmt->fetch()) {
-    $out .= '{"id": ' . $row["id"] . ',' .
-            '"name": "' . $row["name"] . '",' .
-            '"fullname": "' . $row["fullname"] . '"},';
+    $out .= '{"name": "' . $row["name"] . '",' .
+            '"num_quotes": ' . $row["num_quotes"] . '},';
   }
 
   $out = rtrim($out, ",");
@@ -123,14 +122,14 @@ function main($search, $speaker, $sort, $by, $limit, $page) {
 
   $query = 'SELECT id, quote, context, name, year 
             FROM vw_quotes 
-            WHERE name LIKE :speaker 
+            WHERE name REGEXP :speaker 
               AND status = "Approved"
               AND (quote LIKE :quote OR context LIKE :quote)
             ORDER BY ' . $column . ' ' . $by . '
             LIMIT ' . (int)$limit . ' OFFSET ' . $offset . ';';
 
   if ($speaker == "---") {
-    $speakerGlob = "%";
+    $speakerGlob = ".*";
   } else {
     $speakerGlob = $speaker;
   }
@@ -171,7 +170,6 @@ function main($search, $speaker, $sort, $by, $limit, $page) {
   } catch (PDOException $e) {
     fail($e->getMessage());
   }
-
 
   $out .= '], "page": ' . $page . ', "total": ' . $total . '}';
 
