@@ -1,8 +1,62 @@
-$primary-color: color("indigo", "base") !default;
-$primary-color-light: lighten($primary-color, 15%) !default;
-$primary-color-dark: darken($primary-color, 15%) !default;
+//
+// Colours
+//
 
-$secondary-color: color("indigo", "lighten-1") !default;
-$success-color: color("green", "base") !default;
-$error-color: color("red", "base") !default;
-$link-color: color("indigo", "base") !default;
+// Materialize overrides
+$primary-color:                   color("indigo", "base");
+$primary-color-light:             lighten($primary-color, 15%);
+$primary-color-dark:              darken($primary-color, 15%);
+
+$secondary-color:                 color("indigo", "lighten-1");
+$link-color:                      color("indigo", "base");
+
+// Status colours
+$success-color:                   color("green", "accent-4");
+$error-color:                     color("red", "accent-4");
+$info-color:                      color("light-blue", "accent-4");
+$warning-color:                   color("yellow", "accent-4");
+
+// "Stolen" from bootstrap (thanks open source!)
+$state-success-text:              lighten($success-color, 15%);
+$state-success-bg:                $success-color;
+$state-success-border:            darken($success-color, 5%);
+
+$state-info-text:                 lighten($info-color, 15%);
+$state-info-bg:                   $info-color;
+$state-info-border:               darken($info-color, 5%);
+
+$state-warning-text:              lighten($warning-color, 15%);
+$state-warning-bg:                $warning-color;
+$state-warning-border:            darken($warning-color, 5%);
+$mark-bg:                         $state-warning-bg;
+
+$state-danger-text:               lighten($error-color, 15%);
+$state-danger-bg:                 $error-color;
+$state-danger-border:             darken($error-color, 5%);
+
+//
+// Components
+//
+
+$border-radius:                   0rem;
+
+//
+// Spacing
+//
+
+$spacer:                          0.1rem;
+$spacer-x:                        $spacer;
+$spacer-y:                        $spacer;
+$border-width:                    1px;
+
+//
+// Alert
+//
+
+// From Bootstrap alert
+$alert-padding-x:             1.25rem;
+$alert-padding-y:             .75rem;
+$alert-margin-bottom:         $spacer-y;
+$alert-border-radius:         $border-radius;
+$alert-link-font-weight:      bold;
+$alert-border-width:          $border-width;
