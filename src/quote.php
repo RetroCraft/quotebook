@@ -73,10 +73,10 @@
         </p>
       </div>
       <?php if ($admin): ?>
-      <hr><br>
+      <hr>
       <div class="row"><p>
           <strong>Note:</strong> You own this quote. Go to the <a href="dashboard.php">Dashboard</a> to edit it.
-          <span class="status <?php echo $row['colour']; ?>">
+          <span class="status lg <?php echo $row['colour']; ?>">
             Status: <?php echo $row['status']; ?>
           </span>
       </p></div>

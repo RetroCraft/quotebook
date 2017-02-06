@@ -9,6 +9,10 @@
   margin: 0;
 }
 
+hr {
+  @extend .row;
+}
+
 body {
   min-height: 100%;
 }
@@ -113,12 +117,21 @@ main {
 .status {
   @extend .chip;
   float: right;
+  color: white;
 
-  @media #{$small-and-down} {
-    display: block;
-    width: 100%;
-    margin: 0.5rem 0.25rem 0rem;
-    float: none;
+  &.lg {
+    @media #{$small-and-down} {
+      display: block;
+      width: 100%;
+      margin: 0.5rem 0.25rem 0rem;
+      float: none;
+    }
+  }
+
+  &.sm {
+    height: 24px;
+    font-size: 12px;
+    line-height: 24px;
   }
 }
 

@@ -31,9 +31,11 @@
   <div class="container">
     <h1 style="margin-top: 10%">Login</h1>
     <hr>
-    <?php if (isset($_GET["logout"])): ?>
-      <div class="alert alert-success"><strong>Yay!</strong> Logout successful</div>
-    <?php endif; ?>
+    <div class="row">
+      <?php if (isset($_GET["logout"])): ?>
+        <div class="alert alert-success"><strong>Yay!</strong> Logout successful</div>
+      <?php endif; ?>
+    </div>
     <div class="row">
       <div class="input-field col s12">
         <label for="username">Username</label>
