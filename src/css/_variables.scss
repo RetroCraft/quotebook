@@ -17,20 +17,20 @@ $info-color:                      color("light-blue", "accent-4");
 $warning-color:                   color("yellow", "accent-4");
 
 // "Stolen" from bootstrap (thanks open source!)
-$state-success-text:              lighten($success-color, 15%);
+$state-success-text:              lighten($success-color, 90%);
 $state-success-bg:                $success-color;
 $state-success-border:            darken($success-color, 5%);
 
-$state-info-text:                 lighten($info-color, 15%);
+$state-info-text:                 lighten($info-color, 90%);
 $state-info-bg:                   $info-color;
 $state-info-border:               darken($info-color, 5%);
 
-$state-warning-text:              lighten($warning-color, 15%);
+$state-warning-text:              lighten($warning-color, 90%);
 $state-warning-bg:                $warning-color;
 $state-warning-border:            darken($warning-color, 5%);
 $mark-bg:                         $state-warning-bg;
 
-$state-danger-text:               lighten($error-color, 15%);
+$state-danger-text:               lighten($error-color, 90%);
 $state-danger-bg:                 $error-color;
 $state-danger-border:             darken($error-color, 5%);
 
