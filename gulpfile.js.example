@@ -3,6 +3,8 @@ var sass          = require('gulp-sass');
 var sftp          = require('gulp-sftp');
 var changed       = require('gulp-changed');
 var postcss       = require('gulp-postcss');
+var concat        = require('gulp-concat');
+var uglify        = require('gulp-uglify');
 var autoprefixer  = require('autoprefixer');
 var del           = require('del');
 var merge2        = require('merge2');
@@ -10,9 +12,24 @@ var merge2        = require('merge2');
 var src = 'src/**';
 var dist = 'dist/';
 
+var uploadable = [src, "!src/css/**", "!src/js/**", "!src/php/database.php.example"];
+
 gulp.task('clean', function () {
   del.sync(['./dist/**', '!./dist']);
-})
+});
+
+gulp.task('js', function() {
+  return gulp.src(['src/js/**/*.js', 'node_modules/jquery/dist/jquery.js', 'node_modules/materialize-css/dist/js/materialize.js', 'node_modules/tether/dist/js/tether.js'])
+    .pipe(uglify())
+    .pipe(concat('main.js'))
+    .pipe(gulp.dest(dist + 'js'))
+    .pipe(sftp({
+      host: 'example.com',
+      user: 'root',
+      key: 'keyfile',
+      remotePath: '/var/www/js'
+    }));
+});
 
 gulp.task('sass', function() {
   return gulp.src('src/css/style.scss')
@@ -28,7 +45,7 @@ gulp.task('sass', function() {
 });
 
 gulp.task('upload', function () {
-  return gulp.src([src, "!src/css/**", "!src/php/database.php.example"])
+  return gulp.src(uploadable)
     .pipe(changed(dist))
     .pipe(gulp.dest(dist))
     .pipe(sftp({
@@ -40,6 +57,7 @@ gulp.task('upload', function () {
 });
 
 gulp.task('default', ['clean'], function () {
-  gulp.watch([src, "!src/css/**", "!src/php/database.php.example"], ['upload']);
-  gulp.watch(['src/css/**/*.scss', 'lib/**/*.scss'], ['sass']);
+  gulp.watch(uploadable, ['upload']);
+  gulp.watch(['src/css/**/*.scss'], ['sass']);
+  gulp.watch(['src/js/*.js'], ['js']);
 })
