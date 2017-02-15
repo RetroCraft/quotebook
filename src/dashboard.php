@@ -30,6 +30,7 @@
 
     function refresh() {
       query({action: 'myquotes'}, function(data) {
+        console.log(data);
         html = '';
         quotes = data.quotes;
         for (var i = 0; i < quotes.length; i++) {

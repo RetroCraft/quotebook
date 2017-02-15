@@ -36,7 +36,7 @@ if($_POST["action"] == 'signup') {
     $dbh = connect();
 
     // check for user
-    $query = "SELECT id, name, fullname, submit, admin FROM users WHERE name = :name AND pass = :pass LIMIT 1;";
+    $query = "SELECT id, name, fullname, submit, admin FROM users WHERE name = :name AND pass = :pass AND login = 1 LIMIT 1;";
     $name = $_POST["name"];
     $pass = $_POST["pass"];
 

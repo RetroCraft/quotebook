@@ -109,16 +109,7 @@
     <div class="row">
       <div class="input-field col s12">
         <label for="morestuff">Anything else you'd like to add?</label>
-        <!--Gosh this is a stupid decision let's pretend didn't happen...-->
-        <textarea id="morestuff" cols="30" rows="10" class="materialize-textarea code">### Header (use at least H3, so that it's not *too* big)
-  *italics* **bold** ***blitalics*** ~~strikethrough~~
-  > This is a big giant quote!
-
-  | Tables        | Are           | Cool  |
-  | ------------- |:-------------:| -----:|
-  | col 3 is      | right-aligned | $1600 |
-  | col 2 is      | centered      |   $12 |
-  | idk why you   | would need    |  this |</textarea>
+        <textarea id="morestuff" cols="30" rows="10" class="materialize-textarea code"></textarea>
         <p class="form-text text-muted">What you write in here is formatted with Markdown. Examples are included. If you don't know how to read an example, you can use Google for help. <a href="http://lmgtfy.com/?iie=1&q=Markdown+cheat+sheet" target="_blank">I should not have to tell you to do that.</a></p>
       </div>
     </div>
