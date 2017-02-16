@@ -65,8 +65,8 @@
                     + '<a href="#" onclick="del(' + q.id + ')"><i class="material-icons">delete</i></a>'
                     + '<span class="status sm ' + q.colour + '">' + q.status + '</span>';
             }
-            }
-          html += '</ul>';
+            html += '</div></div>';
+          }
           $("#approve").html(html);
         });
       <?php endif; ?>

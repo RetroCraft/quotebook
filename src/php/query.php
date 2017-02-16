@@ -379,7 +379,7 @@ function approvequotes() {
   }
 
   try {
-    $stmt = $dbh->prepare('SELECT quote, fullname, status, colour FROM vw_quotes WHERE status != "Approved";');    
+    $stmt = $dbh->prepare('SELECT id, quote, fullname, status, colour FROM vw_quotes WHERE status != "Approved";');    
     $stmt->bindParam(":user", $user, PDO::PARAM_STR);
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->execute();

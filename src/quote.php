@@ -39,12 +39,25 @@
     $stmt = $dbh->prepare('SELECT * FROM vw_quotes WHERE id = :id AND status = "Approved"');
     $stmt->bindParam(":id", $id, PDO::PARAM_STR);
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
-    $stmt->execute();
-    $row = $stmt->fetch();
+    $stmt->execute();    
     
-    // Quote does not exist or is not available to user
+    // Quote is not available to user
     if (!$row) {
-      fail("Quote not found. Maybe it was deleted?");
+      // Try admin superpowers
+      if ($_SESSION['user']['admin'] == 1) {
+        $stmt = $dbh->prepare('SELECT * FROM vw_quotes WHERE id = :id');
+        $stmt->bindParam(":id", $id, PDO::PARAM_STR);
+        $stmt->setFetchMode(PDO::FETCH_ASSOC);
+        $stmt->execute();
+        $row = $stmt->fetch();
+
+        if (!$row)
+          fail("Quote not found. Maybe it was deleted?");
+        else
+          $admin = true;
+      } else {
+        fail("Quote not found. Maybe it was deleted?");
+      }
     }
   }
 
@@ -75,7 +88,7 @@
       <?php if ($admin): ?>
       <hr>
       <div class="row"><p>
-          <strong>Note:</strong> You own this quote. Go to the <a href="dashboard.php">Dashboard</a> to edit it.
+          <strong>Note:</strong> You can edit this quote. Go to the <a href="dashboard.php">Dashboard</a> to edit it.
           <span class="status lg <?php echo $row['colour']; ?>">
             Status: <?php echo $row['status']; ?>
           </span>
