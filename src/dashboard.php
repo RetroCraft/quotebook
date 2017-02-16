@@ -63,6 +63,7 @@
             if (q.status != "Marked for Deletion") {
               html += '<a href="#" onclick="edit(' + q.id + ')"><i class="material-icons">edit</i></a>'
                     + '<a href="#" onclick="del(' + q.id + ')"><i class="material-icons">delete</i></a>'
+                    + '<a href="#" onclick="approve(' + q.id + ')"><i class="material-icons">check_circle</i></a>'
                     + '<span class="status sm ' + q.colour + '">' + q.status + '</span>';
             }
             html += '</div></div>';
@@ -159,6 +160,14 @@
       // Show modal
       modal.modal().modal('open');
     }
+
+    <?php if (admin): ?>
+    function approve(id) {
+      query({action: "approve", "id": id}, function() {
+        refresh();
+      })
+    }
+    <?php endif; ?>
   </script>
 </head>
 <body>

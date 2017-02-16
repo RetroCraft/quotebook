@@ -66,6 +66,13 @@ switch($_POST["action"]) {
     approvequotes();
     break;
 
+  case "approve":
+    if (!isset($_POST['id']))
+      fail("Missing parameters");
+
+    approve($_POST['id']);
+    break;
+
   case "deletemark":
     if (!isset($_POST['id']))
       fail("Missing parameters");
@@ -407,6 +414,16 @@ function approvequotes() {
   $out .= "]}";
 
   die($out);
+}
+
+function approve($id) {
+  global $dbh;
+
+  if ($_SESSION["user"]["admin"] != 1) {
+    fail("Must be admin to approve/rejct quotes");
+  }
+
+  statusupdate($id, "Approved");
 }
 
 function statusupdate($id, $status) {
