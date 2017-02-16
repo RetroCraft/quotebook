@@ -25,7 +25,7 @@
       simpleLineBreaks: true
     });
 
-    var quotes = {};
+    var archive = {};
 
     $(document).ready(refresh);
 
@@ -33,15 +33,16 @@
       query({action: 'myquotes'}, function(data) {
         console.log(data);
         html = '';
-        quotes = data.quotes;
+        var quotes = data.quotes;
         for (var i = 0; i < quotes.length; i++) {
           q = quotes[i];
+          archive[q.id] = q;
           html += '<div class="card"><div class="card-content">'
                 + '<span class="card-title"><a href="/quote.php?id=' + q.id + '">' + q.quote + '</a></span>'
                 + '<p>' + q.excerpt + '</p>' + '<p>&ndash;' + q.name + '</p></div><div class="card-action">';
           if (q.status != "Marked for Deletion") {
-            html += '<a href="#" onclick="edit(' + i + ', 0)"><i class="material-icons">edit</i></a>'
-                  + '<a href="#" onclick="del(' + i + ', 0)"><i class="material-icons">delete</i></a>'
+            html += '<a href="#" onclick="edit(' + q.id + ')"><i class="material-icons">edit</i></a>'
+                  + '<a href="#" onclick="del(' + q.id + ')"><i class="material-icons">delete</i></a>'
                   + '<span class="status sm ' + q.colour + '">' + q.status + '</span>';
           }
           html += '</div></div>';
@@ -51,15 +52,20 @@
       <?php if (admin): ?>
         query({action: 'approvequotes'}, function(data) {
           console.log(data);
-          html = '<ul class="collection">';
-          quotes = data.quotes;
+          html = '';
+          var quotes = data.quotes;
           for (var i = 0; i < quotes.length; i++) {
             q = quotes[i];
-            html += '<li class="collection-item">'
-                  + '<span class="title">' + q.quote + '</span><br>'
-                  + '&mdash;' + q.name 
-                  + '</li>';
-          }
+            archive[q.id] = q;
+            html += '<div class="card"><div class="card-content">'
+                  + '<span class="card-title"><a href="/quote.php?id=' + q.id + '">' + q.quote + '</a></span>'
+                  + '<p>' + q.excerpt + '</p>' + '<p>&ndash;' + q.name + '</p></div><div class="card-action">';
+            if (q.status != "Marked for Deletion") {
+              html += '<a href="#" onclick="edit(' + q.id + ')"><i class="material-icons">edit</i></a>'
+                    + '<a href="#" onclick="del(' + q.id + ')"><i class="material-icons">delete</i></a>'
+                    + '<span class="status sm ' + q.colour + '">' + q.status + '</span>';
+            }
+            }
           html += '</ul>';
           $("#approve").html(html);
         });
@@ -67,7 +73,7 @@
     }
 
     function edit(id) {
-      var q = quotes[id];
+      var q = archive[id];
 
       // Setup modal
       var modal = $('#edit-modal');
@@ -133,7 +139,7 @@
     }
 
     function del(id) {
-      var q = quotes[id];
+      var q = archive[id];
 
       // Setup modal
       var modal = $('#del-modal');
