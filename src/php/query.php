@@ -61,6 +61,10 @@ switch($_POST["action"]) {
   case "myquotes":
     myquotes();
     break;
+  
+  case "approvequotes":
+    approvequotes();
+    break;
 
   case "deletemark":
     if (!isset($_POST['id']))
@@ -338,6 +342,44 @@ function myquotes() {
 
   try {
     $stmt = $dbh->prepare("SELECT quote, morestuff, status, fullname, id, colour FROM vw_quotes WHERE submittedby = :user;");    
+    $stmt->bindParam(":user", $user, PDO::PARAM_STR);
+    $stmt->setFetchMode(PDO::FETCH_ASSOC);
+    $stmt->execute();
+  } catch (PDOException $e) {
+    fail($e->getMessage());
+  }
+
+  $out = '{"status": "success", "quotes": [';
+
+  while ($row = $stmt->fetch()) {    
+    if ($row['morestuff'] != "")
+      $excerpt = str_replace("\n", "\\n", str_replace('\\', '\\\\', str_replace("\"", '\\"', htmlspecialchars(substr($row['morestuff'], 0, 75))))) . '...';
+    else
+      $excerpt = '';
+
+    $out .= '{"quote": "' . $row['quote'] . '",'
+          . '"excerpt": "' . $excerpt . '",'
+          . '"status": "' . $row['status'] . '",'
+          . '"name": "' . $row['fullname'] . '",'
+          . '"id": "' . $row['id'] . '",'
+          . '"colour": "' . $row['colour'] . '"},';
+  }
+
+  $out = rtrim($out, ",");
+  $out .= "]}";
+
+  die($out);
+}
+
+function approvequotes() {
+  global $dbh;
+
+  if ($_SESSION["user"]["admin"] == 0) {
+    fail("No permissions to approve stuff. No hacking you bad.");
+  }
+
+  try {
+    $stmt = $dbh->prepare('SELECT quote, fullname, status, colour FROM vw_quotes WHERE status != "Approved";');    
     $stmt->bindParam(":user", $user, PDO::PARAM_STR);
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->execute();

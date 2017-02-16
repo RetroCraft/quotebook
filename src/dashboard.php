@@ -5,6 +5,7 @@
     header('Location: http://quotebook.retrocraft.ca/login.php');
   } else {
     $user = $_SESSION['user']['name'];
+    $admin = ($_SESSION["user"]["admin"] == 1);
   }
 ?>
 <!DOCTYPE html>
@@ -45,8 +46,24 @@
           }
           html += '</div></div>';
         }
-        $(".quotes").html(html);
+        $("#quotes-mine").html(html);
       });
+      <?php if (admin): ?>
+        query({action: 'approvequotes'}, function(data) {
+          console.log(data);
+          html = '<ul class="collection">';
+          quotes = data.quotes;
+          for (var i = 0; i < quotes.length; i++) {
+            q = quotes[i];
+            html += '<li class="collection-item">'
+                  + '<span class="title">' + q.quote + '</span><br>'
+                  + '&mdash;' + q.name 
+                  + '</li>';
+          }
+          html += '</ul>';
+          $("#approve").html(html);
+        });
+      <?php endif; ?>
     }
 
     function edit(id) {
@@ -147,8 +164,16 @@
     </div>
   </div>
   <div class="container">
-    <h2>Your Quotes</h2>
-    <div class="quotes card-columns"></div>
+    <div class="row">
+      <div class="col s12">
+        <ul class="tabs">
+          <li class="tab"><a href="#quotes-mine">My Quotes</a></li>
+          <?php if (admin): ?><li class="tab"><a href="#approve">Approve Quotes</a></li><?php endif; ?>
+        </ul>
+      </div>
+      <div id="quotes-mine" class="quotes card-columns col s12"></div>
+      <?php if (admin): ?><div id="approve" class="col s12"></div><?php endif; ?>
+    </div>
   </div>
   <?php include('php/footer.php'); ?>
   <div class="modal modal-fixed-footer" id="del-modal">
