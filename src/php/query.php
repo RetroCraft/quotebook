@@ -110,8 +110,6 @@ switch($_POST["action"]) {
     fail("Unknown action");
 }
 
-else:
-  fail("Unspecified action");
 endif;
 
 function main($search, $speaker, $sort, $by, $limit, $page) {
