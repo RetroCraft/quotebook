@@ -43,6 +43,9 @@
           if (q.status != "Marked for Deletion") {
             html += '<a href="#" onclick="edit(' + q.id + ')"><i class="material-icons">edit</i></a>'
                   + '<a href="#" onclick="del(' + q.id + ')"><i class="material-icons">delete</i></a>'
+                  <?php if (admin): ?> 
+                    + '<a href="#" onclick="reject(' + q.id + ')"><i class="material-icons">thumb_down</i></a>'
+                  <?php endif; ?>
                   + '<span class="status sm ' + q.colour + '">' + q.status + '</span>';
           }
           html += '</div></div>';
@@ -63,7 +66,8 @@
             if (q.status != "Marked for Deletion") {
               html += '<a href="#" onclick="edit(' + q.id + ')"><i class="material-icons">edit</i></a>'
                     + '<a href="#" onclick="del(' + q.id + ')"><i class="material-icons">delete</i></a>'
-                    + '<a href="#" onclick="approve(' + q.id + ')"><i class="material-icons">check_circle</i></a>'
+                    + '<a href="#" onclick="approve(' + q.id + ')"><i class="material-icons">thumb_up</i></a>'
+                    + '<a href="#" onclick="reject(' + q.id + ')"><i class="material-icons">thumb_down</i></a>'
                     + '<span class="status sm ' + q.colour + '">' + q.status + '</span>';
             }
             html += '</div></div>';
@@ -164,6 +168,12 @@
     <?php if (admin): ?>
     function approve(id) {
       query({action: "approve", "id": id}, function() {
+        refresh();
+      })
+    }
+
+    function reject(id) {
+      query({action: "reject", "id": id}, function() {
         refresh();
       })
     }

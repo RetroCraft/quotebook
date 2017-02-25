@@ -73,6 +73,13 @@ switch($_POST["action"]) {
     approve($_POST['id']);
     break;
 
+  case "reject":
+    if (!isset($_POST['id']))
+      fail("Missing parameters");
+
+    reject($_POST['id']);
+    break;
+
   case "deletemark":
     if (!isset($_POST['id']))
       fail("Missing parameters");
@@ -420,10 +427,20 @@ function approve($id) {
   global $dbh;
 
   if ($_SESSION["user"]["admin"] != 1) {
-    fail("Must be admin to approve/rejct quotes");
+    fail("Must be admin to approve quotes");
   }
 
   statusupdate($id, "Approved");
+}
+
+function reject($id) {
+  global $dbh;
+
+  if ($_SESSION["user"]["admin"] != 1) {
+    fail("Must be admin to rejct quotes");
+  }
+
+  statusupdate($id, "Rejected");
 }
 
 function statusupdate($id, $status) {
