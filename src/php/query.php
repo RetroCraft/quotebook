@@ -43,7 +43,7 @@ switch($_POST["action"]) {
     if (!isset($_POST['currpass']) || !isset($_POST['newpass']))
       fail("Missing parameters");
 
-    changepass($_POST['currpass'], $_POST['newpass'], $_SESSION["user"]["name"]);
+    changepass($_POST['currpass'], $_POST['newpass'], $_SESSION["user"]["id"]);
     break;
     
   case "people":
@@ -55,7 +55,7 @@ switch($_POST["action"]) {
         !isset($_POST['context']) || !isset($_POST['timestamp']) || !isset($_POST['morestuff']))
       fail("Missing parameters");
 
-    submit($_POST['speaker'], $_POST['quote'], $_POST['context'], $_POST['timestamp'], $_POST['morestuff'], $_SESSION['user']['name']);
+    submit($_POST['speaker'], $_POST['quote'], $_POST['context'], $_POST['timestamp'], $_POST['morestuff'], $_SESSION['user']['id']);
     break;
   
   case "myquotes":
@@ -136,9 +136,9 @@ function main($search, $speaker, $sort, $by, $limit, $page) {
 
   $offset = (int)$limit * ((int)$page - 1);
 
-  $query = 'SELECT id, quote, context, name, year 
+  $query = 'SELECT id, quote, context, speaker_name, year 
             FROM vw_quotes 
-            WHERE name REGEXP :speaker 
+            WHERE speaker_name REGEXP :speaker 
               AND status = "Approved"
               AND (quote LIKE :quote OR context LIKE :quote)
             ORDER BY ' . $column . ' ' . $by . '
@@ -171,7 +171,7 @@ function main($search, $speaker, $sort, $by, $limit, $page) {
     $out .= '{"id": ' . $row["id"] . ',' .
             '"quote": "' . $row["quote"] . '",' .
             '"context": "' . $row["context"] . '",' .
-            '"speaker": "' . $row["name"] . '",' .
+            '"speaker": "' . $row["speaker_name"] . '",' .
             '"year": "' . $row["year"] . '"},';
   }
 
@@ -199,7 +199,7 @@ function permission($id) {
 
   // Check if owner of quote
   try {
-    $stmt = $dbh->prepare('SELECT status, submittedby FROM vw_quotes WHERE id = :id');
+    $stmt = $dbh->prepare('SELECT status, submitter_id FROM vw_quotes WHERE id = :id');
     $stmt->bindParam(":id", $id, PDO::PARAM_STR);
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->execute();
@@ -209,7 +209,7 @@ function permission($id) {
 
   if ($row = $stmt->fetch()) {
     // Check owner
-    if ($row['submittedby'] == $_SESSION['user']['name'])
+    if ($row['submitter_id'] == $_SESSION['user']['id'])
       return OWN;
     
     // Check permissions to view
@@ -231,7 +231,7 @@ function quote($id) {
   if ($access > NONE) {
     // Grab quote data
     try {
-      $stmt = $dbh->prepare('SELECT id, quote, name, fullname, context, morestuff, date, year, submittedby, status, colour FROM vw_quotes WHERE id = :id');
+      $stmt = $dbh->prepare('SELECT id, quote, name, fullname, context, morestuff, date, year, submitter_name, status, colour FROM vw_quotes WHERE id = :id');
       $stmt->bindParam(":id", $id, PDO::PARAM_STR);
       $stmt->setFetchMode(PDO::FETCH_ASSOC);
       $stmt->execute();
@@ -258,7 +258,7 @@ function quote($id) {
       }
 
       if ($access >= ADMIN) {
-        $out .= ', "submittedby": "' . $row['submittedby'] . '"';
+        $out .= ', "submitter_name": "' . $row['submitter_name'] . '"';
       }
 
       $out .= '}}';
@@ -271,14 +271,14 @@ function quote($id) {
   }
 }
 
-function changepass($currpass, $newpass, $name) {
+function changepass($currpass, $newpass, $id) {
   global $dbh;
   // check for user
-  $query = "SELECT name FROM users WHERE name = :name AND pass = :pass LIMIT 1;";
+  $query = "SELECT id FROM users WHERE id = :id AND pass = :pass LIMIT 1;";
 
   try {
     $stmt = $dbh->prepare($query);
-    $stmt->bindParam(":name", $name, PDO::PARAM_STR);
+    $stmt->bindParam(":id", $id, PDO::PARAM_STR);
     $stmt->bindParam(":pass", $currpass, PDO::PARAM_STR);
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->execute();
@@ -289,8 +289,8 @@ function changepass($currpass, $newpass, $name) {
   if ($row = $stmt->fetch()) {
     // Update password
     try {
-      $stmt = $dbh->prepare("UPDATE users SET pass = :pass WHERE name = :name");
-      $stmt->bindParam(":name", $name, PDO::PARAM_STR);
+      $stmt = $dbh->prepare("UPDATE users SET pass = :pass WHERE id = :id");
+      $stmt->bindParam(":id", $id, PDO::PARAM_STR);
       $stmt->bindParam(":pass", $newpass, PDO::PARAM_STR);
       $stmt->execute();
     } catch (PDOException $e) {
@@ -326,10 +326,10 @@ function people() {
   die($out);
 }
 
-function submit($speaker, $quote, $context, $timestamp, $morestuff, $submittedby) {
+function submit($speaker, $quote, $context, $timestamp, $morestuff, $submitter_id) {
   global $dbh;
-  $query = 'INSERT INTO quotes (quote, context, morestuff, speaker, `date`, submittedby) 
-            VALUES (:quote, :context, :morestuff, :speaker, :timestamp, :submittedby)';
+  $query = 'INSERT INTO quotes (quote, context, morestuff, speaker, `date`, submitter_id) 
+            VALUES (:quote, :context, :morestuff, :speaker, :timestamp, :submitter_id)';
 
   try {
     $stmt = $dbh->prepare($query);
@@ -338,7 +338,7 @@ function submit($speaker, $quote, $context, $timestamp, $morestuff, $submittedby
     $stmt->bindParam(":context", $context, PDO::PARAM_STR);
     $stmt->bindParam(":timestamp", $timestamp, PDO::PARAM_STR);
     $stmt->bindParam(":morestuff", $morestuff, PDO::PARAM_STR);
-    $stmt->bindParam(":submittedby", $submittedby, PDO::PARAM_STR);
+    $stmt->bindParam(":submitter_id", $submitter_id, PDO::PARAM_STR);
     $stmt->execute();
   } catch (PDOException $e) {
     fail($e->getMessage());
@@ -350,10 +350,10 @@ function submit($speaker, $quote, $context, $timestamp, $morestuff, $submittedby
 function myquotes() {
   global $dbh;
 
-  $user = $_SESSION['user']['name'];
+  $user = $_SESSION['user']['id'];
 
   try {
-    $stmt = $dbh->prepare("SELECT quote, morestuff, status, fullname, id, colour FROM vw_quotes WHERE submittedby = :user;");    
+    $stmt = $dbh->prepare("SELECT quote, morestuff, status, fullname, id, colour FROM vw_quotes WHERE submitter_id = :user;");    
     $stmt->bindParam(":user", $user, PDO::PARAM_STR);
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->execute();
