@@ -21,6 +21,10 @@
           <i class="material-icons">settings</i>
           <span class="hide-on-med-and-down"> Settings</span>
         </a></li>
+        <li class="waves-effect"><a onclick="$('#booksel').modal('open')">
+          <i class="material-icons">book</i>
+          <span class="hide-on-med-and-down"> Books</span>
+        </a></li>
         <li class="waves-effect"><a href="/php/checklogin.php?logout">
           <i class="material-icons">exit_to_app</i>
           <span class="hide-on-med-and-down"> Logout</span>

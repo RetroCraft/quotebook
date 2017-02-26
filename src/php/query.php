@@ -106,6 +106,10 @@ switch($_POST["action"]) {
     }
     break;
 
+  case "books":
+    die(books());
+    break;
+  
   default:
     fail("Unknown action");
 }
@@ -455,6 +459,37 @@ function statusupdate($id, $status) {
   }
 
   return '{"status": "success"}';
+}
+
+function books() {
+  global $dbh;
+
+  $user = $_SESSION['user']['id'];
+
+  $query = "SELECT book_id, book_name, book_displayname, role FROM vw_users WHERE id = :id";
+
+  try {
+    $stmt = $dbh->prepare($query);
+    $stmt->bindParam(":id", $user, PDO::PARAM_STR);
+    $stmt->setFetchMode(PDO::FETCH_ASSOC);
+    $stmt->execute();
+  } catch (PDOException $e) {
+    fail($e->getMessage());
+  }
+
+  $out = '{"status": "success", "books": [';
+
+  while ($row = $stmt->fetch()) {
+    $out .= '{"id": "' . $row['book_id'] . '",'
+          . '"name": "' . $row['book_name'] . '",'
+          . '"displayname": "' . $row['book_displayname'] . '",'
+          . '"role": "' . $row['role'] . '"},';
+  }
+
+  $out = rtrim($out, ",");
+  $out .= ']}';
+
+  return $out;
 }
 
 function fail($error) {

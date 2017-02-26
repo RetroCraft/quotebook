@@ -31,4 +31,16 @@ $(document).ready(function() {
   $("select").material_select();
   $(".navbar").pushpin();
   $('.tabs').tabs();
+  $('.modal').modal();
+
+  // Book select modal
+  query({action: 'books'}, function(data) {
+    var html = "";
+    for (var i = 0; i < data.books.length; i++) {
+      b = data.books[i];
+      html += "<a href='/php/query.php?book=" + b.id + "'><li class='collection-item'><span class='title'>" + b.displayname + "</span></li></a>";
+    }
+
+    $("#books").html(html);
+  });
 });

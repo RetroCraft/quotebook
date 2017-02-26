@@ -7,3 +7,10 @@
     </p>
   </div>
 </footer>
+<div id="booksel" class="modal bottom-sheet">
+  <div class="modal-content">
+    <h4>Book Select</h4>
+    <ul id="books" class="collection">
+    </ul>
+  </div>
+</div>
