@@ -118,10 +118,18 @@ endif;
 
 function main($search, $speaker, $sort, $by, $limit, $page) {
   global $dbh;
+
   $out = '{"status": "success", "authors": [';
 
+  $query = "SELECT name, num_quotes FROM vw_users 
+              WHERE num_quotes >= 1 AND book_id = :book
+              ORDER BY num_quotes DESC;";
+  $book = $_SESSION['book']['id'];
+
   try {
-    $stmt = $dbh->prepare("SELECT name, num_quotes FROM vw_users WHERE num_quotes >= 1 ORDER BY num_quotes DESC;");
+    $stmt = $dbh->prepare($query);
+    $stmt->bindParam(":book", $book, PDO::PARAM_INT);
+    $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->execute();
   } catch (PDOException $e) {
     fail($e->getMessage());
@@ -145,6 +153,7 @@ function main($search, $speaker, $sort, $by, $limit, $page) {
             WHERE speaker_name REGEXP :speaker 
               AND status = "Approved"
               AND (quote LIKE :quote OR context LIKE :quote)
+              AND book_id = :book
             ORDER BY ' . $column . ' ' . $by . '
             LIMIT ' . (int)$limit . ' OFFSET ' . $offset . ';';
 
@@ -164,6 +173,7 @@ function main($search, $speaker, $sort, $by, $limit, $page) {
     $stmt = $dbh->prepare($query);
     $stmt->bindParam(":speaker", $speakerGlob, PDO::PARAM_STR);
     $stmt->bindParam(":quote", $searchGlob, PDO::PARAM_STR);
+    $stmt->bindParam(":book", $book, PDO::PARAM_INT);
     $stmt->bindParam(":lim", $lim, PDO::PARAM_INT);
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->execute();
@@ -182,7 +192,9 @@ function main($search, $speaker, $sort, $by, $limit, $page) {
   $out = rtrim($out, ",");
 
   try {
-    $stmt = $dbh->prepare("SELECT COUNT(*) FROM quotes");
+    $stmt = $dbh->prepare("SELECT COUNT(*) FROM quotes WHERE book_id = :book");
+    $stmt->bindParam(":book", $book, PDO::PARAM_INT);
+    $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->execute();
 
     $row = $stmt->fetch();
@@ -234,9 +246,16 @@ function quote($id) {
 
   if ($access > NONE) {
     // Grab quote data
+
+    $query = 'SELECT id, quote, name, fullname, context, morestuff, date, year, submitter_name, status, colour 
+                FROM vw_quotes 
+                WHERE id = :id AND book_id = :book';
+    $book = $_SESSION['book']['id'];
+
     try {
-      $stmt = $dbh->prepare('SELECT id, quote, name, fullname, context, morestuff, date, year, submitter_name, status, colour FROM vw_quotes WHERE id = :id');
+      $stmt = $dbh->prepare();
       $stmt->bindParam(":id", $id, PDO::PARAM_STR);
+      $stmt->bindParam(":book", $book, PDO::PARAM_INT);
       $stmt->setFetchMode(PDO::FETCH_ASSOC);
       $stmt->execute();
     } catch (PDOException $e) {
@@ -312,7 +331,8 @@ function changepass($currpass, $newpass, $id) {
 function people() {
   global $dbh;
   try {
-    $stmt = $dbh->prepare("SELECT name FROM users;");
+    $stmt = $dbh->prepare("SELECT name FROM vw_users WHERE book_id = :book;");
+    $stmt->bindParam(":book", $book, PDO::PARAM_INT);
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->execute();
   } catch (PDOException $e) {
@@ -333,11 +353,14 @@ function people() {
 
 function submit($speaker, $quote, $context, $timestamp, $morestuff, $submitter_id) {
   global $dbh;
-  $query = 'INSERT INTO quotes (quote, context, morestuff, speaker, `date`, submitter_id) 
-            VALUES (:quote, :context, :morestuff, :speaker, :timestamp, :submitter_id)';
+  $query = 'INSERT INTO quotes (book_id, quote, context, morestuff, speaker, `date`, submitter_id) 
+            VALUES (:book, :quote, :context, :morestuff, :speaker, :timestamp, :submitter_id)';
+  
+  $book = $_SESSION['book']['id'];
 
   try {
     $stmt = $dbh->prepare($query);
+    $stmt->bindParam(":book", $book, PDO::PARAM_INT);
     $stmt->bindParam(":speaker", $speaker, PDO::PARAM_STR);
     $stmt->bindParam(":quote", $quote, PDO::PARAM_STR);
     $stmt->bindParam(":context", $context, PDO::PARAM_STR);
@@ -356,10 +379,16 @@ function myquotes() {
   global $dbh;
 
   $user = $_SESSION['user']['id'];
+  $book = $_SESSION['book']['id'];
+
+  $query = "SELECT quote, morestuff, status, fullname, id, colour 
+              FROM vw_quotes 
+              WHERE submitter_id = :user AND book_id = :book;";
 
   try {
-    $stmt = $dbh->prepare("SELECT quote, morestuff, status, fullname, id, colour FROM vw_quotes WHERE submitter_id = :user;");    
+    $stmt = $dbh->prepare($query);    
     $stmt->bindParam(":user", $user, PDO::PARAM_STR);
+    $stmt->bindParam(":book", $book, PDO::PARAM_INT);
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->execute();
   } catch (PDOException $e) {
