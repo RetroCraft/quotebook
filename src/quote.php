@@ -78,7 +78,7 @@
       <div class="row">
         <h1><?php echo $row["quote"]; ?></h1>
         <p>
-          &mdash;<a href="speaker.php?id=<?php echo $row["speaker"]; ?>"><?php echo $row["fullname"]; ?></a>, 
+          &mdash;<a href="speaker.php?id=<?php echo $row["speaker_id"]; ?>"><?php echo $row["fullname"]; ?></a>, 
           <?php echo $row["context"];
           if ($row["year"] > 1) {
           echo ", " . $row["year"]; 
