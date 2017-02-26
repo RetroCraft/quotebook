@@ -462,7 +462,7 @@ function approve($id) {
     fail("Must be admin to approve quotes");
   }
 
-  statusupdate($id, "Approved");
+  return statusupdate($id, "Approved");
 }
 
 function reject($id) {
@@ -472,7 +472,7 @@ function reject($id) {
     fail("Must be admin to rejct quotes");
   }
 
-  statusupdate($id, "Rejected");
+  return statusupdate($id, "Rejected");
 }
 
 function statusupdate($id, $status) {
