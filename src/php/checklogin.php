@@ -1,32 +1,7 @@
 <?php
 session_start();
 
-if (!isset($_POST["action"]) && !isset($_GET['logout'])) {
-  fail("No action specified.");
-}
-
-if($_POST["action"] == 'signup') {  
-  include('database.php');
-  $dbh = connect();
-
-  $user = $_POST["user"];
-  $name = $_POST["name"];
-  $pass = $_POST["pass"];
-
-  $stmt = $dbh->prepare("INSERT INTO users (user, fullname, pass) VALUES (:user, :name, :pass);");
-  $stmt->bindParam(":user", $user);
-  $stmt->bindParam(":name", $name);
-  $stmt->bindParam(":pass", $pass);
-
-  try {
-    $stmt->execute();
-    filelog("Signup", "For $email ($user)");
-    die("success");
-  } catch (PDOException $e) {
-    fail($e->getMessage());
-  }
-
-} else if ($_POST["action"] == 'login') {
+if ($_POST["action"] == 'login') {
 
   if(isset($_SESSION["login"]) && $_SESSION["login"] == "true") {
     success("Already logged in.");
@@ -55,7 +30,6 @@ if($_POST["action"] == 'signup') {
       $_SESSION["user"] = $row;
 
       filelog("Login", "From $name");
-      header("Location: http://quotebook.retrocraft.ca");
       success("Login successful.");
     } else {
       filelog("Login", "Incorrect login for $name.");
@@ -63,7 +37,7 @@ if($_POST["action"] == 'signup') {
     }
   }
 
-} else if (isset($_GET["logout"]) || $_POST["action"] = 'logout') {
+} else if (isset($_GET["logout"])) {
 
   $name = $_SESSION['user']['name'];
   filelog("Logout", "From $name");
@@ -72,9 +46,34 @@ if($_POST["action"] == 'signup') {
   header("Location: http://quotebook.retrocraft.ca/login.php?logout");
   success("Logout successful");
 
+} else if (isset($_GET['book'])) {
+
+  include('database.php');
+  $dbh = connect();
+
+  $newbook = $_GET['book'];
+
+  $query = "SELECT id, name, displayname FROM books WHERE id = :id";
+
+  try {
+    $stmt = $dbh->prepare($query);
+    $stmt->bindParam(":id", $newbook, PDO::PARAM_STR);
+    $stmt->setFetchMode(PDO::FETCH_ASSOC);
+    $stmt->execute();
+  } catch (PDOException $e) {
+    fail($e->getMessage());
+  }
+
+  if ($row = $stmt->fetch()) {
+    $_SESSION['book'] = $row;
+    header('Location: http://quotebook.retrocraft.ca/');
+  } else {
+    header('Location: http://quotebook.retrocraft.ca/?err=Unknown+book');
+  }
+
 } else {
 
-  fail("Unknown action");
+  fail("Unknown or unspecified action");
 
 }
 

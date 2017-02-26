@@ -19,9 +19,22 @@
           if (data.status == "error") {
             alertbox(data.message, 'danger');
           } else if (data.status == "success") {
-            window.location = "http://quotebook.retrocraft.ca/";
+            query({action: 'books'}, function(data) {
+              var html = "";
+              for (var i = 0; i < data.books.length; i++) {
+                b = data.books[i];
+                html += "<a href='/php/checklogin.php?book=" + b.id + "'><li class='collection-item'><span class='title'>" + b.displayname + "</span></li></a>";
+              }
+
+              $("#books").html(html);
+              $("#booksel").modal({
+                dismissible: false
+              });
+              $("#booksel").modal('open');
+            });
           }
         }, 'json');
+        $("#login").attr('disabled');
       })
     });
   </script>

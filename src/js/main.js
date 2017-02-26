@@ -38,7 +38,7 @@ $(document).ready(function() {
     var html = "";
     for (var i = 0; i < data.books.length; i++) {
       b = data.books[i];
-      html += "<a href='/php/query.php?book=" + b.id + "'><li class='collection-item'><span class='title'>" + b.displayname + "</span></li></a>";
+      html += "<a href='/php/checklogin.php?book=" + b.id + "'><li class='collection-item'><span class='title'>" + b.displayname + "</span></li></a>";
     }
 
     $("#books").html(html);

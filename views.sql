@@ -6,6 +6,7 @@ select u.id id,
     u.login login,
     b.id book_id,
     b.name book_name,
+    b.displayname book_displayname,
     ur.role_id role_id,
     r.role role,
     sum(case q.status when "Approved" then 1 else 0 end) num_quotes
@@ -14,8 +15,8 @@ select u.id id,
   left outer join books b on b.id = ur.book_id
   left outer join roles r on r.id = ur.role_id
   left outer join quotes q on q.speaker_id = u.id and q.book_id = b.id
-  group by 1, 2, 3, 4, 5, 6, 7, 8
-  order by 9;
+  group by 1, 2, 3, 4, 5, 6, 7, 8, 9
+  order by 10;
   
 create or replace view vw_quotes
 as
