@@ -8,7 +8,7 @@
   if (!isset($_SESSION['user'])) {
     header('Location: http://quotebook.retrocraft.ca/login.php');
   } else {
-    $user = $_SESSION['user']['name'];
+    $user = $_SESSION['user']['id'];
   }
 
   // Make sure ID is provided
@@ -20,7 +20,7 @@
 
   // Try retrieving quote as user
   try {
-    $stmt = $dbh->prepare('SELECT * FROM vw_quotes WHERE id = :id AND submittedby = :user');
+    $stmt = $dbh->prepare('SELECT * FROM vw_quotes WHERE id = :id AND submitter_id = :user');
     $stmt->bindParam(":id", $id, PDO::PARAM_STR);
     $stmt->bindParam(":user", $user, PDO::PARAM_STR);
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
@@ -122,7 +122,7 @@
           </tr>
           <tr>
             <th scope="row">Submitted By</th>
-            <td><?php echo $row["submittedby"]; ?></td>
+            <td><?php echo $row["submitter_name"]; ?></td>
           </tr>
           <tr>
             <th scope="row">Submitted Time</th>
