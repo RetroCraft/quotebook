@@ -29,25 +29,25 @@ switch($_POST["action"]) {
     else
       $page = $_POST["page"];
 
-    main($_POST["filters:search"], $_POST["filters:speaker"], $sort, $by, $_POST["limit"], $page);
+    die(main($_POST["filters:search"], $_POST["filters:speaker"], $sort, $by, $_POST["limit"], $page));
     break;
 
   case "quote":
     if (!isset($_POST['id']))
       fail("Missing parameters");
     
-    quote($_POST['id']);
+    die(quote($_POST['id']));
     break;
 
   case "changepass":
     if (!isset($_POST['currpass']) || !isset($_POST['newpass']))
       fail("Missing parameters");
 
-    changepass($_POST['currpass'], $_POST['newpass'], $_SESSION["user"]["id"]);
+    die(changepass($_POST['currpass'], $_POST['newpass'], $_SESSION["user"]["id"]));
     break;
     
   case "people":
-    people();
+    die(people());
     break;
 
   case "submit":
@@ -55,29 +55,29 @@ switch($_POST["action"]) {
         !isset($_POST['context']) || !isset($_POST['timestamp']) || !isset($_POST['morestuff']))
       fail("Missing parameters");
 
-    submit($_POST['speaker'], $_POST['quote'], $_POST['context'], $_POST['timestamp'], $_POST['morestuff'], $_SESSION['user']['id']);
+    die(submit($_POST['speaker'], $_POST['quote'], $_POST['context'], $_POST['timestamp'], $_POST['morestuff'], $_SESSION['user']['id']));
     break;
   
   case "myquotes":
-    myquotes();
+    die(myquotes());
     break;
   
   case "approvequotes":
-    approvequotes();
+    die(approvequotes());
     break;
 
   case "approve":
     if (!isset($_POST['id']))
       fail("Missing parameters");
 
-    approve($_POST['id']);
+    die(approve($_POST['id']));
     break;
 
   case "reject":
     if (!isset($_POST['id']))
       fail("Missing parameters");
 
-    reject($_POST['id']);
+    die(reject($_POST['id']));
     break;
 
   case "deletemark":
@@ -189,7 +189,7 @@ function main($search, $speaker, $sort, $by, $limit, $page) {
 
   $out .= '], "page": ' . $page . ', "total": ' . $total . '}';
 
-  die($out);
+  return $out;
 }
 
 function permission($id) {
@@ -262,7 +262,8 @@ function quote($id) {
       }
 
       $out .= '}}';
-      die($out);
+
+      return $out;
     } else {
       fail('Something went wrong and I have no idea how this happened...');
     }
@@ -297,7 +298,7 @@ function changepass($currpass, $newpass, $id) {
       fail($e->getMessage());
     }
     
-    die('{"status":"success"}');
+    return '{"status":"success"}';
 
   } else {
     fail("Incorrect current password, or something else wrong happened.");
@@ -323,7 +324,7 @@ function people() {
   $out = rtrim($out, ",");
   $out .= "]}";
 
-  die($out);
+  return $out;
 }
 
 function submit($speaker, $quote, $context, $timestamp, $morestuff, $submitter_id) {
@@ -344,7 +345,7 @@ function submit($speaker, $quote, $context, $timestamp, $morestuff, $submitter_i
     fail($e->getMessage());
   }
 
-  die('{"status": "success"}');
+  return '{"status": "success"}';
 }
 
 function myquotes() {
@@ -380,7 +381,7 @@ function myquotes() {
   $out = rtrim($out, ",");
   $out .= "]}";
 
-  die($out);
+  return $out;
 }
 
 function approvequotes() {
@@ -418,7 +419,7 @@ function approvequotes() {
   $out = rtrim($out, ",");
   $out .= "]}";
 
-  die($out);
+  return $out;
 }
 
 function approve($id) {
@@ -453,7 +454,7 @@ function statusupdate($id, $status) {
     fail($e->getMessage());
   }
 
-  die('{"status": "success"}');
+  return '{"status": "success"}';
 }
 
 function fail($error) {
