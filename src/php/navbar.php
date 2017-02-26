@@ -7,6 +7,7 @@
           <i class="material-icons">home</i>
           <span class="hide-on-med-and-down"> Home</span>
         </a></li>
+        <?php if ($_SESSION['user']['role_id'] >= 2): ?>
         <li class="waves-effect"><a href="/submit.php">
           <i class="material-icons">create</i>
           <span class="hide-on-med-and-down"> Submit</span>
@@ -15,6 +16,7 @@
           <i class="material-icons">dashboard</i>
           <span class="hide-on-med-and-down"> Dashboard</span>
         </a></li>
+        <?php endif; ?>
       </ul>
       <ul class="right">
         <li class="waves-effect"><a href="/settings.php">

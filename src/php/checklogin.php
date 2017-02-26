@@ -51,13 +51,17 @@ if ($_POST["action"] == 'login') {
   include('database.php');
   $dbh = connect();
 
+  $user = $_SESSION['user']['id'];
   $newbook = $_GET['book'];
 
-  $query = "SELECT id, name, displayname FROM books WHERE id = :id";
+  $query = "SELECT id, name, fullname, login, book_id, book_name, book_displayname, role_id, role 
+              FROM vw_users 
+              WHERE id = :id AND book_id = :book";
 
   try {
     $stmt = $dbh->prepare($query);
-    $stmt->bindParam(":id", $newbook, PDO::PARAM_STR);
+    $stmt->bindParam(":id", $user, PDO::PARAM_STR);
+    $stmt->bindParam(":book", $newbook, PDO::PARAM_STR);
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->execute();
   } catch (PDOException $e) {
@@ -65,7 +69,8 @@ if ($_POST["action"] == 'login') {
   }
 
   if ($row = $stmt->fetch()) {
-    $_SESSION['book'] = $row;
+    $_SESSION['user'] = $row;
+    
     header('Location: http://quotebook.retrocraft.ca/');
   } else {
     header('Location: http://quotebook.retrocraft.ca/?err=Unknown+book');

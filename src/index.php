@@ -96,7 +96,7 @@
   <div class="header">
     <div class="container">
       <div class="row">
-        <h1>Quotebook &ndash; <?php echo $_SESSION['book']['displayname']; ?></h1>
+        <h1>Quotebook &ndash; <?php echo $_SESSION['user']['book_displayname']; ?></h1>
         <p class="lead">Why did I make this?</p>
       </div>
     </div>

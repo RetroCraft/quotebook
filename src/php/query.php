@@ -1,19 +1,14 @@
 <?php
 session_start();
 
-// Permission level constants
-define('NONE', -1);
-define('VIEW', 0);
-define('EDIT', 1);
-define('OWN', 2);
-define('ADMIN', 3);
-
 include('database.php');
 $dbh = connect();
 
 if (isset($_POST["action"])):
 
 header("Content-type: application/json;charset=utf8");
+$admin = ($_SESSION['user']['admin'] == '1' || $_SESSION['user']['role_id'] >= 3);
+
 switch($_POST["action"]) {
 
   case "main":
@@ -190,43 +185,13 @@ function main($search, $speaker, $sort, $by, $limit, $page) {
   return $out;
 }
 
-function permission($id) {
-  // Check for admin level
-  if ($_SESSION['user']['admin'] == '1')
-    return ADMIN;
-
-  // Check if owner of quote
-  try {
-    $stmt = $dbh->prepare('SELECT status, submitter_id FROM vw_quotes WHERE id = :id');
-    $stmt->bindParam(":id", $id, PDO::PARAM_STR);
-    $stmt->setFetchMode(PDO::FETCH_ASSOC);
-    $stmt->execute();
-  } catch (PDOException $e) {
-    fail($e->getMessage());
-  }
-
-  if ($row = $stmt->fetch()) {
-    // Check owner
-    if ($row['submitter_id'] == $_SESSION['user']['id'])
-      return OWN;
-    
-    // Check permissions to view
-    if ($row['status'] == 'Approved')
-      return VIEW;
-    
-    return NONE;
-  } else {
-    die('Invalid id.');
-  }
-}
-
 function quote($id) {
   global $dbh;
 
   $user = $_SESSION['user']['name'];
-  $access = permission($id);
+  $role = $_SESSION['user']['role_id'];
 
-  if ($access > NONE) {
+  if ($role > 0) {
     // Grab quote data
 
     $query = 'SELECT id, quote, name, fullname, context, morestuff, date, year, submitter_name, status, colour 
@@ -257,12 +222,12 @@ function quote($id) {
             . ', "morestuff": "' . $morestuff . '"'
             . ', "date": "' . $row['date'] . '"'
             . ', "year": ' . $row['year'];
-      if ($access >= EDIT) {
+      if ($role >= 3 || $row['submitter_name'] == $_SESSION['user']['name'] || $admin) {
         $out .= ', "status": "' . $row['status'] . '"'
               . ', "colour": "' . $row['colour']. '"';
       }
 
-      if ($access >= ADMIN) {
+      if ($role >= 3 || $admin) {
         $out .= ', "submitter_name": "' . $row['submitter_name'] . '"';
       }
 
@@ -338,6 +303,10 @@ function people() {
 
 function submit($speaker, $quote, $context, $timestamp, $morestuff, $submitter_id) {
   global $dbh;
+
+  if ($_SESSION['user']['role_id'] < 2)
+    die('You must have permission to submit to be able to submit... self-explanatory, isn\'t it');
+
   $query = 'INSERT INTO quotes (book_id, quote, context, morestuff, speaker_id, `date`, submitter_id) 
             VALUES (:book, :quote, :context, :morestuff, :speaker, :timestamp, :submitter_id)';
   
@@ -405,7 +374,7 @@ function myquotes() {
 function approvequotes() {
   global $dbh;
 
-  if ($_SESSION["user"]["admin"] == 0) {
+  if (!$admin && $_SESSION['user']['role_id'] < 3) {
     fail("No permissions to approve stuff. No hacking you bad.");
   }
 
@@ -443,7 +412,7 @@ function approvequotes() {
 function approve($id) {
   global $dbh;
 
-  if ($_SESSION["user"]["admin"] != 1) {
+  if (!$admin && $_SESSION['user']['role_id'] < 3) {
     fail("Must be admin to approve quotes");
   }
 
@@ -453,7 +422,7 @@ function approve($id) {
 function reject($id) {
   global $dbh;
 
-  if ($_SESSION["user"]["admin"] != 1) {
+  if (!$admin && $_SESSION['user']['role_id'] < 3) {
     fail("Must be admin to rejct quotes");
   }
 
@@ -473,7 +442,7 @@ function deletemark($id) {
 
   if ($row = $stmt->fetch()) {
     // Owner of quote or is administrator
-    if ($row['submitter_id'] == $_SESSION['user']['id'] || $_SESSION['user']['admin'] == '1') {
+    if ($row['submitter_id'] == $_SESSION['user']['id'] || $_SESSION['user']['role_id'] >= 3 || $admin) {
       return statusupdate($_POST['id'], "Marked for Deletion");
     } else {
       fail("You don't have permission to delete this quote!");
@@ -503,7 +472,9 @@ function books() {
 
   $user = $_SESSION['user']['id'];
 
-  $query = "SELECT book_id, book_name, book_displayname, role FROM vw_users WHERE id = :id";
+  $query = "SELECT book_id, book_name, book_displayname, role 
+              FROM vw_users 
+              WHERE id = :id AND role_id <= 1";
 
   try {
     $stmt = $dbh->prepare($query);
