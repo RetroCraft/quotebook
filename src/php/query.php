@@ -13,6 +13,7 @@ $dbh = connect();
 
 if (isset($_POST["action"])):
 
+header("Content-type: application/json;charset=utf8");
 switch($_POST["action"]) {
 
   case "main":
@@ -84,26 +85,7 @@ switch($_POST["action"]) {
     if (!isset($_POST['id']))
       fail("Missing parameters");
 
-    // Check permissions
-    try {
-      $stmt = $dbh->prepare('SELECT submittedby FROM quotes WHERE id = :id');
-      $stmt->bindParam(":id", $_POST["id"], PDO::PARAM_STR);
-      $stmt->setFetchMode(PDO::FETCH_ASSOC);
-      $stmt->execute();
-    } catch (PDOException $e) {
-      fail($e->getMessage());
-    }
-
-    if ($row = $stmt->fetch()) {
-      // Owner of quote or is administrator
-      if ($row['submittedby'] == $_SESSION['user']['name'] || $_SESSION['user']['admin'] == '1') {
-        statusupdate($_POST['id'], "Marked for Deletion");
-      } else {
-        fail("You don't have permission to delete this quote!");
-      }
-    } else {
-      fail("Invalid id");
-    }
+    die(deletemark());
     break;
 
   case "books":
@@ -330,8 +312,11 @@ function changepass($currpass, $newpass, $id) {
 
 function people() {
   global $dbh;
+
+  $book = $_SESSION['book']['id'];
+
   try {
-    $stmt = $dbh->prepare("SELECT name FROM vw_users WHERE book_id = :book;");
+    $stmt = $dbh->prepare("SELECT id, name FROM vw_users WHERE book_id = :book;");
     $stmt->bindParam(":book", $book, PDO::PARAM_INT);
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->execute();
@@ -342,7 +327,7 @@ function people() {
   $out = '{"status": "success", "people": [';
 
   while ($row = $stmt->fetch()) {
-    $out .= '{"name": "' . $row["name"] . '"},';
+    $out .= '{"id": "' . $row["id"] . '", "name": "' . $row["name"] . '"},';
   }
 
   $out = rtrim($out, ",");
@@ -353,7 +338,7 @@ function people() {
 
 function submit($speaker, $quote, $context, $timestamp, $morestuff, $submitter_id) {
   global $dbh;
-  $query = 'INSERT INTO quotes (book_id, quote, context, morestuff, speaker, `date`, submitter_id) 
+  $query = 'INSERT INTO quotes (book_id, quote, context, morestuff, speaker_id, `date`, submitter_id) 
             VALUES (:book, :quote, :context, :morestuff, :speaker, :timestamp, :submitter_id)';
   
   $book = $_SESSION['book']['id'];
@@ -473,6 +458,29 @@ function reject($id) {
   }
 
   return statusupdate($id, "Rejected");
+}
+
+function deletemark($id) {
+  // Check permissions
+  try {
+    $stmt = $dbh->prepare('SELECT submitter_id FROM quotes WHERE id = :id');
+    $stmt->bindParam(":id", $id, PDO::PARAM_STR);
+    $stmt->setFetchMode(PDO::FETCH_ASSOC);
+    $stmt->execute();
+  } catch (PDOException $e) {
+    fail($e->getMessage());
+  }
+
+  if ($row = $stmt->fetch()) {
+    // Owner of quote or is administrator
+    if ($row['submitter_id'] == $_SESSION['user']['id'] || $_SESSION['user']['admin'] == '1') {
+      return statusupdate($_POST['id'], "Marked for Deletion");
+    } else {
+      fail("You don't have permission to delete this quote!");
+    }
+  } else {
+    fail("Invalid id");
+  }
 }
 
 function statusupdate($id, $status) {

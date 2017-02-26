@@ -46,7 +46,7 @@
         var people = data.people;
         var select = '';
         for (var i = 0; i < people.length; i++) {
-          select += '<option>' + people[i].name + '</option>';
+          select += '<option value="' + people[i].id + '">' + people[i].name + '</option>';
         }
         $("#speaker").html(select);
         $("#speaker").material_select();

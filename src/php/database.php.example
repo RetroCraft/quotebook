@@ -5,7 +5,7 @@ function connect() {
     $user = 'user';
     $password = 'password';
     
-    $dbh = new PDO("mysql:host=localhost;dbname=$database", "$user", "$password");
+    $dbh = new PDO("mysql:host=localhost;dbname=$database;charset=utf8", "$user", "$password");
     $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     return $dbh;
   } catch (PDOException $e) {
