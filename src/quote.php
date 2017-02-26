@@ -17,12 +17,14 @@
   }
 
   $id = $_GET["id"];
+  $book = $_SESSION['user']['book_id'];
 
   // Try retrieving quote as user
   try {
-    $stmt = $dbh->prepare('SELECT * FROM vw_quotes WHERE id = :id AND submitter_id = :user');
+    $stmt = $dbh->prepare('SELECT * FROM vw_quotes WHERE book_id = :book AND id = :id AND submitter_id = :user');
     $stmt->bindParam(":id", $id, PDO::PARAM_STR);
     $stmt->bindParam(":user", $user, PDO::PARAM_STR);
+    $stmt->bindParam(":book", $book, PDO::PARAM_STR);
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->execute();
   } catch (PDOException $e) {
@@ -36,17 +38,19 @@
     $admin = false;
 
     // Try retrieving quote normally
-    $stmt = $dbh->prepare('SELECT * FROM vw_quotes WHERE id = :id AND status = "Approved"');
+    $stmt = $dbh->prepare('SELECT * FROM vw_quotes WHERE book_id = :book AND id = :id AND status = "Approved"');
     $stmt->bindParam(":id", $id, PDO::PARAM_STR);
+    $stmt->bindParam(":book", $book, PDO::PARAM_STR);
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->execute();    
     
     // Quote is not available to user
     if (!$row) {
       // Try admin superpowers
-      if ($_SESSION['user']['admin'] == 1) {
-        $stmt = $dbh->prepare('SELECT * FROM vw_quotes WHERE id = :id');
+      if ($_SESSION['user']['admin'] == 1 || $_SESSION['user']['role_id'] >= 3) {
+        $stmt = $dbh->prepare('SELECT * FROM vw_quotes WHERE id = :id AND book_id = :book');
         $stmt->bindParam(":id", $id, PDO::PARAM_STR);
+        $stmt->bindParam(":book", $book, PDO::PARAM_STR);
         $stmt->setFetchMode(PDO::FETCH_ASSOC);
         $stmt->execute();
         $row = $stmt->fetch();

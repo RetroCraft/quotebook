@@ -101,7 +101,7 @@ function main($search, $speaker, $sort, $by, $limit, $page) {
   $query = "SELECT name, num_quotes FROM vw_users 
               WHERE num_quotes >= 1 AND book_id = :book
               ORDER BY num_quotes DESC;";
-  $book = $_SESSION['book']['id'];
+  $book = $_SESSION['user']['book_id'];
 
   try {
     $stmt = $dbh->prepare($query);
@@ -197,7 +197,7 @@ function quote($id) {
     $query = 'SELECT id, quote, name, fullname, context, morestuff, date, year, submitter_name, status, colour 
                 FROM vw_quotes 
                 WHERE id = :id AND book_id = :book';
-    $book = $_SESSION['book']['id'];
+    $book = $_SESSION['user']['book_id'];
 
     try {
       $stmt = $dbh->prepare();
@@ -278,7 +278,7 @@ function changepass($currpass, $newpass, $id) {
 function people() {
   global $dbh;
 
-  $book = $_SESSION['book']['id'];
+  $book = $_SESSION['user']['book_id'];
 
   try {
     $stmt = $dbh->prepare("SELECT id, name FROM vw_users WHERE book_id = :book;");
@@ -310,7 +310,7 @@ function submit($speaker, $quote, $context, $timestamp, $morestuff, $submitter_i
   $query = 'INSERT INTO quotes (book_id, quote, context, morestuff, speaker_id, `date`, submitter_id) 
             VALUES (:book, :quote, :context, :morestuff, :speaker, :timestamp, :submitter_id)';
   
-  $book = $_SESSION['book']['id'];
+  $book = $_SESSION['user']['book_id'];
 
   try {
     $stmt = $dbh->prepare($query);
@@ -333,7 +333,7 @@ function myquotes() {
   global $dbh;
 
   $user = $_SESSION['user']['id'];
-  $book = $_SESSION['book']['id'];
+  $book = $_SESSION['user']['book_id'];
 
   $query = "SELECT quote, morestuff, status, fullname, id, colour 
               FROM vw_quotes 
@@ -474,7 +474,7 @@ function books() {
 
   $query = "SELECT book_id, book_name, book_displayname, role 
               FROM vw_users 
-              WHERE id = :id AND role_id <= 1";
+              WHERE id = :id AND role_id >= 1";
 
   try {
     $stmt = $dbh->prepare($query);

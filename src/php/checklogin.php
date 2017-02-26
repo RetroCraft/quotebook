@@ -11,7 +11,7 @@ if ($_POST["action"] == 'login') {
     $dbh = connect();
 
     // check for user
-    $query = "SELECT id, name, fullname, submit, admin FROM users WHERE name = :name AND pass = :pass AND login = 1 LIMIT 1;";
+    $query = "SELECT id, name, fullname, admin FROM users WHERE name = :name AND pass = :pass AND login = 1 LIMIT 1;";
     $name = $_POST["name"];
     $pass = $_POST["pass"];
 
@@ -56,7 +56,8 @@ if ($_POST["action"] == 'login') {
 
   $query = "SELECT id, name, fullname, login, book_id, book_name, book_displayname, role_id, role 
               FROM vw_users 
-              WHERE id = :id AND book_id = :book";
+              WHERE id = :id AND book_id = :book
+              LIMIT 1";
 
   try {
     $stmt = $dbh->prepare($query);
